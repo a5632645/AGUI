@@ -10,4 +10,8 @@ typedef enum {
     eAgAlign_YBottom = 0b1100,
 
     eAgAlign_Center = eAgAlign_XCenter | eAgAlign_YCenter,
+    eAgAlign_None = 0,
 } AgAlignEnum;
+
+#define AGUI_X_ALIGN(x) ((x) & 0b11)
+#define AGUI_Y_ALIGN(y) (((y) & 0b1100))

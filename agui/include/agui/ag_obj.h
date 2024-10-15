@@ -3,6 +3,7 @@
 #include "agui/ag_types.h"
 #include "agui/ag_rect.h"
 #include "agui/ag_painter.h"
+#include "agui/ag_event.h"
 
 struct __AgObj;
 
@@ -12,6 +13,7 @@ struct __AgObj;
 typedef struct {
     void(*draw)(struct __AgObj* obj, AgPainter* painter);
     void(*layout)(struct __AgObj* obj);
+    void(*event)(struct __AgObj* obj, const AgEvent* event);
 } AgObjVFunc;
 
 /**
@@ -22,7 +24,7 @@ typedef struct __AgObj {
     AgListNode node;
     /* 父节点 */
     struct __AgObj* parent;
-    /* 子节点 */
+    /* 子节点，注意不会释放内存 */
     AgList childern;
     /* 虚函数 */
     AgObjVFunc vfunc;
@@ -34,8 +36,10 @@ typedef struct __AgObj {
         /* 可见性 */
         ag_bool visiable : 1;
     } flags;
-    /* 包围盒，全局独立计算免得递归更新 */
+    /* 在父节点空间的位置，全局独立计算免得递归更新 */
     AgRect bound;
+    /* 自己空间的位置 */
+    AgRect local_bound;
 } AgObj;
 
 // ---------------------------------------- 基础操作 ----------------------------------------
@@ -53,6 +57,21 @@ void AgObj_Init(AgObj* obj);
 void AgObj_AddChild(AgObj* obj, AgObj* child);
 
 /**
+ * @brief 添加子节点，不会检查重复，不会触发绘制和布局，处于最底层
+ * @param obj 
+ * @param child 
+ */
+void AgObj_AddChildAtBack(AgObj* obj, AgObj* child);
+
+/**
+ * @brief 从某个数组中添加子节点，不会触发绘制和布局
+ * @param obj 
+ * @param childs 
+ * @param count 
+ */
+void AgObj_AddChildFromArray(AgObj* obj, AgObj* childs, ag_uint32 count);
+
+/**
  * @brief 移除子节点，不会检查是否存在，不会触发绘制和布局
  * @param obj 
  * @param child 
@@ -60,11 +79,41 @@ void AgObj_AddChild(AgObj* obj, AgObj* child);
 void AgObj_RemoveChild(AgObj* obj, AgObj* child);
 
 /**
+ * @brief 移除所有的子节点，不会触发绘制和布局
+ * @param obj 
+ */
+void AgObj_RemoveAllChild(AgObj* obj);
+
+/**
+ * @brief 从父节点移除
+ * @param obj 
+ */
+void AgObj_LeaveParent(AgObj* obj);
+
+/**
  * @brief 绘制
  * @param obj 
  * @param painter 
  */
 void AgObj_DrawObj(AgObj* obj, AgPainter* painter);
+
+/**
+ * @brief 测试是否被点击
+ * @param obj 
+ * @param x 
+ * @param y 
+ * @return 
+ */
+ag_bool AgObj_HitTest(AgObj* obj, ag_int16 x, ag_int16 y);
+
+/**
+ * @brief 找到被点击的节点
+ * @param obj 
+ * @param x 
+ * @param y 
+ * @return 
+ */
+AgObj* AgObj_HitObj(AgObj* obj, ag_int16 x, ag_int16 y);
 
 // ---------------------------------------- 状态操作 ----------------------------------------
 /**
@@ -81,6 +130,12 @@ void AgObj_SetVisiable(AgObj* obj, ag_bool visiable);
 void AgObj_MarkRedraw(AgObj* obj);
 
 // ---------------------------------------- 布局操作 ----------------------------------------
+/**
+ * @brief 触发布局
+ * @param obj 
+ */
+void AgObj_DoLayout(AgObj* obj);
+
 /**
  * @brief 设置布局
  * @param obj 
@@ -103,3 +158,31 @@ void AgObj_SetPos(AgObj* obj, ag_int16 x, ag_int16 y);
  * @param h 
  */
 void AgObj_SetSize(AgObj* obj, ag_int16 w, ag_int16 h);
+
+// ---------------------------------------- z操作 ----------------------------------------
+/**
+ * @brief 将节点置顶
+ * @param obj 
+ */
+void AgObj_BringToFront(AgObj* obj);
+
+/**
+ * @brief 将节点放到最底层
+ * @param obj 
+ */
+void AgObj_SendToBack(AgObj* obj);
+
+// ---------------------------------------- 奇怪的操作 ----------------------------------------
+/**
+ * @brief 计算节点的边界
+ * @param obj 
+ * 没有Clip操作，就算边界不对也会显示
+ */
+void AgObj_CalcBound(AgObj* obj);
+
+/**
+ * @brief 发送事件
+ * @param obj 
+ * @param event 
+ */
+void AgObj_SendEvent(AgObj* obj, AgEvent* event);

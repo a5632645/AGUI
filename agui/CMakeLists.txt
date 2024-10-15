@@ -1,5 +1,4 @@
-file(GLOB_RECURSE AGUI_SOURCES "*.c")
-
-add_executable(agui ${AGUI_SOURCES})
+file(GLOB_RECURSE agui_sources "*.c" "*.h")
+add_executable(agui ${agui_sources})
+target_link_libraries(agui raylib)
 target_include_directories(agui PUBLIC include)
-target_link_libraries(agui PRIVATE raylib)

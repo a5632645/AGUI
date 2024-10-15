@@ -2,17 +2,20 @@
 
 // ---------------------------------------- 虚函数 ----------------------------------------
 static void Draw(AgObj*, AgPainter*) {}
-static void Laytout(AgObj* obj) {
-    // 默认水平排列
-    ag_int16 x = 0;
-    AgListNode* node = obj->childern.head;
-    while (NULL != node) {
-        AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
-        AgObj_SetPos(child, x, 0);
-        x += child->bound.w;
-        node = node->next;
-    }
-}
+static void Event(AgObj*, const AgEvent*) {}
+static void Laytout(AgObj* obj) 
+// {
+//     // 默认水平排列
+//     ag_int16 x = 0;
+//     AgListNode* node = obj->childern.head;
+//     while (NULL != node) {
+//         AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
+//         AgObj_SetPos(child, x, 0);
+//         x += child->bound.w;
+//         node = node->next;
+//     }
+// }
+{}
 
 // --------------------------------------------------------------------------------
 static void _InitFlags(AgObj* obj) {
@@ -24,6 +27,7 @@ static void _InitFlags(AgObj* obj) {
 static void _InitVFunc(AgObj* obj) {
     obj->vfunc.draw = Draw;
     obj->vfunc.layout = Laytout;
+    obj->vfunc.event = Event;
 }
 
 /**
@@ -123,7 +127,7 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
     }
 }
 
-// --------------------------------------------------------------------------------
+// ---------------------------------------- 初始化 ----------------------------------------
 void AgObj_Init(AgObj* obj) {
     AgListNode_Init(&obj->node);
     obj->parent = NULL;
@@ -131,10 +135,17 @@ void AgObj_Init(AgObj* obj) {
     _InitVFunc(obj);
     _InitFlags(obj);
     AgRect_Zero(&obj->bound);
+    AgRect_Zero(&obj->local_bound);
 }
 
+// ---------------------------------------- 子节点 ----------------------------------------
 void AgObj_AddChild(AgObj* obj, AgObj* child) {
     AgList_PushBack(&obj->childern, &child->node);
+    child->parent = obj;
+}
+
+void AgObj_AddChildAtBack(AgObj* obj, AgObj* child) {
+    AgList_PushFront(&obj->childern, &child->node);
     child->parent = obj;
 }
 
@@ -151,7 +162,64 @@ void AgObj_DrawObj(AgObj* obj, AgPainter* painter) {
     painter->end_frame(painter);
 }
 
-// --------------------------------------------------------------------------------
+void AgObj_AddChildFromArray(AgObj* obj, AgObj* childs, ag_uint32 count) {
+    for (ag_uint32 i = 0; i < count; ++i) {
+        AgList_PushBack(&obj->childern, &childs[i].node);
+        childs[i].parent = obj;
+    }
+}
+
+void AgObj_RemoveAllChild(AgObj* obj) {
+    AgListNode* node = obj->childern.head;
+    while (NULL != node) {
+        node = AgList_Popfront(&obj->childern);
+        if (NULL != node) {
+            AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
+            child->parent = NULL;
+        }
+    }
+}
+
+void AgObj_LeaveParent(AgObj* obj) {
+    if (NULL != obj->parent) {
+        AgObj_RemoveChild(obj->parent, obj);
+    }
+}
+
+ag_bool AgObj_HitTest(AgObj* obj, ag_int16 x, ag_int16 y) {
+    if (x < obj->bound.x || x >= obj->bound.x + obj->bound.w) {
+        return ag_false;
+    }
+    if (y < obj->bound.y || y >= obj->bound.y + obj->bound.h) {
+        return ag_false;
+    }
+    return ag_true;
+}
+
+AgObj* AgObj_HitObj(AgObj* obj, ag_int16 x, ag_int16 y) {
+    if (ag_true == AgObj_HitTest(obj, x, y)) {
+        if (ag_true == AgList_IsEmpty(&obj->childern)) {
+            return obj;
+        }
+        else {
+            AgListNode* node = obj->childern.head;
+            x -= obj->bound.x;
+            y -= obj->bound.y;
+            while (NULL != node) {
+                AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
+                AgObj* ret = AgObj_HitObj(child, x, y);
+                if (NULL != ret) {
+                    return ret;
+                }
+                node = node->next;
+            }
+            return obj;
+        }
+    }
+    return NULL;
+}
+
+// ---------------------------------------- 状态操作 ----------------------------------------
 void AgObj_SetVisiable(AgObj* obj, ag_bool visiable) {
     if (obj->flags.visiable == visiable) {
         return;
@@ -167,12 +235,19 @@ void AgObj_MarkRedraw(AgObj* obj) {
     _ReDrawParentAndAllChild(obj);
 }
 
-// --------------------------------------------------------------------------------
+// ---------------------------------------- 布局 ----------------------------------------
+void AgObj_DoLayout(AgObj* obj) {
+    obj->vfunc.layout(obj);
+    _ReDrawParentAndAllChild(obj);
+}
+
 void AgObj_SetBound(AgObj* obj, const AgRect* bound) {
     if (ag_true == AgRect_Equal(&obj->bound, bound)) {
         return;
     }
     obj->bound = *bound;
+    obj->local_bound.w = bound->w;
+    obj->local_bound.h = bound->h;
     obj->vfunc.layout(obj);
     _ReDrawParentAndAllChild(obj);
 }
@@ -193,6 +268,73 @@ void AgObj_SetSize(AgObj* obj, ag_int16 w, ag_int16 h) {
     }
     obj->bound.w = w;
     obj->bound.h = h;
+    obj->local_bound.w = w;
+    obj->local_bound.h = h;
     obj->vfunc.layout(obj);
     _ReDrawParentAndAllChild(obj);
+}
+
+// ---------------------------------------- z操作 ----------------------------------------
+void AgObj_BringToFront(AgObj* obj) {
+    if (NULL == obj->parent) {
+        return;
+    }
+    AgList_Remove(&obj->parent->childern, &obj->node);
+    AgList_PushBack(&obj->parent->childern, &obj->node);
+    _ReDrawParentAndAllChild(obj);
+}
+
+void AgObj_SendToBack(AgObj* obj) {
+    if (NULL == obj->parent) {
+        return;
+    }
+    AgList_Remove(&obj->parent->childern, &obj->node);
+    AgList_PushFront(&obj->parent->childern, &obj->node);
+    _ReDrawParentAndAllChild(obj);
+}
+
+// ---------------------------------------- 奇怪的操作 ----------------------------------------
+static void _CalcSingleBound(AgObj* obj) {
+    if (ag_false == AgList_IsEmpty(&obj->childern)
+        && (obj->bound.w == 0 || obj->bound.h == 0)) {
+        AgRect rect = {
+            .x = 32767,
+            .y = 32767,
+            .w = -32768,
+            .h = -32768
+        };
+
+        AgListNode* node = obj->childern.head;
+        while (NULL != node) {
+            AgObj* child = AGUI_CONTAINER_OF(AgObj, node ,node);
+            rect.x = AGUI_MIN(rect.x, child->bound.x);
+            rect.y = AGUI_MIN(rect.y, child->bound.y);
+            rect.w = AGUI_MAX(rect.w, child->bound.x + child->bound.w);
+            rect.h = AGUI_MAX(rect.h, child->bound.y + child->bound.h);
+            node = node->next;
+        }
+
+        rect.w -= rect.x;
+        rect.h -= rect.y;
+        rect.x += obj->bound.x;
+        rect.y += obj->bound.y;
+
+        obj->bound = rect;
+        obj->local_bound.w = rect.w;
+        obj->local_bound.h = rect.h;
+    }
+}
+
+void AgObj_CalcBound(AgObj* obj) {
+    AgListNode* node = obj->childern.head;
+    while (NULL != node) {
+        AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
+        _CalcSingleBound(child);
+        node = node->next;
+    }
+    _CalcSingleBound(obj);
+}
+
+void AgObj_SendEvent(AgObj* obj, AgEvent* event) {
+    obj->vfunc.event(obj, event);
 }

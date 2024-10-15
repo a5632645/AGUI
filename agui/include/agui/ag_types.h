@@ -30,5 +30,7 @@ typedef enum {
 
 #define AGUI_OFFSET_OF(STRUCT, MEMBER) ((size_t) &((STRUCT*)0)->MEMBER)
 #define AGUI_CONTAINER_OF(STRUCT, MEMBER, OBJ_ADDR) (STRUCT*)((size_t)(OBJ_ADDR) - AGUI_OFFSET_OF(STRUCT, MEMBER))
+#define AGUI_MIN(a, b) ((a) < (b) ? (a) : (b))
+#define AGUI_MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #endif

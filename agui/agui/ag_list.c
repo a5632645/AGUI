@@ -86,6 +86,10 @@ AgListNode* AgList_Popfront(AgList* list) {
     return head;
 }
 
+ag_bool AgList_IsEmpty(AgList* list) {
+    return list->head == list->tail;
+}
+
 // ---------------------------------------- AgListNode ----------------------------------------
 void AgListNode_Init(AgListNode* node) {
     node->next = NULL;

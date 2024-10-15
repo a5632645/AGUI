@@ -10,3 +10,4 @@ typedef struct {
 
 static const AgColor AG_COLOR_BLACK = {0, 0, 0, 255};
 static const AgColor AG_COLOR_WHITE = {255, 255, 255, 255};
+static const AgColor AG_COLOR_GRAY = {127, 127, 127, 255};
