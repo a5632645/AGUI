@@ -74,7 +74,7 @@ static void _ReDraw(AgObj* obj) {
 }
 
 /**
- * @brief 递归绘制节点
+ * @brief 递归绘制节点，超出范围的节点也会被绘制！
  * @param obj 
  * @param painter 
  */
@@ -84,7 +84,6 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
         ag_int16 bck_w = painter->draw_aera.w;
         ag_int16 bck_h = painter->draw_aera.h;
         ag_bool always_draw = painter->always_redraw;
-        
         /* 移动绘画区域 */
         painter->draw_aera.x += obj->bound.x;
         painter->draw_aera.y += obj->bound.y;
@@ -165,7 +164,7 @@ void AgObj_RemoveChild(AgObj* obj, AgObj* child) {
 }
 
 void AgObj_DrawObj(AgObj* obj, AgPainter* painter) {
-    AgRect_Zero(&painter->draw_aera);
+    AgObj_GetLocalBound(obj, &painter->draw_aera);
     painter->always_redraw = ag_false;
     painter->begin_frame(painter);
     _DrawObj(obj, painter);
@@ -212,14 +211,16 @@ AgObj* AgObj_HitObj(AgObj* obj, ag_int16 x, ag_int16 y) {
             return obj;
         }
         else {
-            AgListNode* node = obj->childern.head;
+            AgListNode* node = obj->childern.tail;
             x -= obj->bound.x;
             y -= obj->bound.y;
             while (NULL != node) {
                 AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
-                AgObj* ret = AgObj_HitObj(child, x, y);
-                if (NULL != ret) {
-                    return ret;
+                if (ag_true == child->flags.visiable) {
+                    AgObj* ret = AgObj_HitObj(child, x, y);
+                    if (NULL != ret) {
+                        return ret;
+                    }
                 }
                 node = node->next;
             }
@@ -270,20 +271,16 @@ void AgObj_SetPos(AgObj* obj, ag_int16 x, ag_int16 y) {
     if (x == obj->bound.x && y == obj->bound.y) {
         return;
     }
-    obj->bound.x = x;
-    obj->bound.y = y;
-    obj->vfunc.layout(obj);
-    _ReDraw(obj->parent);
+    AgRect rect = {x, y, obj->bound.w, obj->bound.h};
+    AgObj_SetBound(obj, &rect);
 }
 
 void AgObj_SetSize(AgObj* obj, ag_int16 w, ag_int16 h) {
     if (w == obj->bound.w && h == obj->bound.h) {
         return;
     }
-    obj->bound.w = w;
-    obj->bound.h = h;
-    obj->vfunc.layout(obj);
-    _ReDraw(obj->parent);
+    AgRect rect = {obj->bound.x, obj->bound.y, w, h};
+    AgObj_SetBound(obj, &rect);
 }
 
 void AgObj_GetLocalBound(AgObj* obj, AgRect* bound) {

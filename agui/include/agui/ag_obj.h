@@ -11,8 +11,11 @@ struct __AgObj;
  * @brief 虚函数表
  */
 typedef struct {
+    /* 绘制，空间坐标按实现给，超出父节点范围的节点也会被绘制 */
     void(*draw)(struct __AgObj* obj, AgPainter* painter);
+    /* 布局，obj是父节点 */
     void(*layout)(struct __AgObj* obj);
+    /* 事件 */
     void(*event)(struct __AgObj* obj, const AgEvent* event);
 } AgObjVFunc;
 

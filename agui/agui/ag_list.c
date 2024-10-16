@@ -87,7 +87,28 @@ AgListNode* AgList_Popfront(AgList* list) {
 }
 
 ag_bool AgList_IsEmpty(AgList* list) {
-    return list->head == list->tail;
+    return NULL == list->head && NULL == list->tail;
+}
+
+void AgList_Cut(AgList* list, AgList* ret, AgListNode* node) {
+    AgList_Init(ret);
+    if (!list || !ret || !node) {
+        return;
+    }
+    /* 连接 */
+    ret->tail = list->tail;
+    ret->head = node;
+    /* 检查 */
+    if (node == list->head) {
+        list->head = NULL;
+        list->tail = NULL;
+    }
+    /* 断开连接 */
+    list->tail = node->prev;
+    if (NULL != node->prev) {
+        node->prev->next = NULL;
+    }
+    node->prev = NULL;
 }
 
 // ---------------------------------------- AgListNode ----------------------------------------
