@@ -3,3 +3,8 @@
 #include "ag_impl/draws_impl.h"
 #include "agui/ag_obj.h"
 #include "agui/ag_align.h"
+
+enum {
+    eAgObjType_TextView = 0,
+    eAgObjType_Button,
+};

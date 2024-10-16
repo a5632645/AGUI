@@ -61,6 +61,7 @@ void AgButton_Init(AgButton* obj) {
     AgObj_Init(&obj->obj);
     obj->press = ag_false;
     obj->obj.vfunc.draw = _Draw;
+    obj->obj.obj_type = eAgObjType_Button;
 }
 
 void AgButton_SetPress(AgButton* btn, ag_bool press) {

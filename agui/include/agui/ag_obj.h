@@ -16,6 +16,10 @@ typedef struct {
     void(*event)(struct __AgObj* obj, const AgEvent* event);
 } AgObjVFunc;
 
+enum {
+    eAgObjType_Obj = -1
+};
+
 /**
  * @brief 节点
  */
@@ -40,6 +44,10 @@ typedef struct __AgObj {
     } flags;
     /* 在父节点空间的位置，全局独立计算免得递归更新 */
     AgRect bound;
+    /* 节点类型,-1=AgObj */
+    ag_uint8 obj_type;
+    /* 节点ID，-1未分配 */
+    ag_uint16 id;
 } AgObj;
 
 // ---------------------------------------- 基础操作 ----------------------------------------

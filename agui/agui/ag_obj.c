@@ -143,6 +143,9 @@ void AgObj_Init(AgObj* obj) {
     _InitVFunc(obj);
     _InitFlags(obj);
     AgRect_Zero(&obj->bound);
+
+    obj->obj_type = eAgObjType_Obj;
+    obj->id = -1;
 }
 
 // ---------------------------------------- 子节点 ----------------------------------------

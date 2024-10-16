@@ -29,4 +29,5 @@ void AgTextView_Init(AgTextView* tv) {
     AgObj_Init(&tv->obj);
     _InitVFunc(&tv->obj.vfunc);
     tv->obj.flags.transpant = ag_true;
+    tv->obj.obj_type = eAgObjType_TextView;
 }

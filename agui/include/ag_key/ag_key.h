@@ -6,10 +6,20 @@
 #pragma once
 #include "agui/ag_obj.h"
 
+typedef enum {
+    eAgKeyAction_GoDown = 0,
+    eAgKeyAction_GoUp,
+    eAgKeyAction_GoNext,
+    eAgKeyAction_GoPrev,
+    eAgKeyAction_GoRoot,
+} AgKeySwitActionEnum;
+
 typedef struct {
     AgObj* root;
     AgObj* current;
     AgObj* highlight;
+    ag_bool(*filter)(AgObj* obj);
+    ag_bool(*action_filter)(AgObj* curr, AgKeySwitActionEnum action);
 } AgKeySwitcher;
 
 /**
