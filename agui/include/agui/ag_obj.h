@@ -35,11 +35,11 @@ typedef struct __AgObj {
         ag_bool invalid : 1;
         /* 可见性 */
         ag_bool visiable : 1;
+        /* 是否是半透明 */
+        ag_bool transpant : 1;
     } flags;
     /* 在父节点空间的位置，全局独立计算免得递归更新 */
     AgRect bound;
-    /* 自己空间的位置 */
-    AgRect local_bound;
 } AgObj;
 
 // ---------------------------------------- 基础操作 ----------------------------------------
@@ -127,7 +127,7 @@ void AgObj_SetVisiable(AgObj* obj, ag_bool visiable);
  * @brief 标记该节点需要重新绘制，如果被遮挡可能发生错误的绘制
  * @param obj 
  */
-void AgObj_MarkRedraw(AgObj* obj);
+void AgObj_Redraw(AgObj* obj);
 
 // ---------------------------------------- 布局操作 ----------------------------------------
 /**
@@ -144,6 +144,16 @@ void AgObj_DoLayout(AgObj* obj);
 void AgObj_SetBound(AgObj* obj, const AgRect* bound);
 
 /**
+ * @brief 设置布局
+ * @param obj 
+ * @param x 
+ * @param y 
+ * @param w 
+ * @param h 
+ */
+void AgObj_SetBounds(AgObj* obj, ag_int16 x, ag_int16 y, ag_int16 w, ag_int16 h);
+
+/**
  * @brief 设置位置
  * @param obj 
  * @param x 
@@ -158,6 +168,13 @@ void AgObj_SetPos(AgObj* obj, ag_int16 x, ag_int16 y);
  * @param h 
  */
 void AgObj_SetSize(AgObj* obj, ag_int16 w, ag_int16 h);
+
+/**
+ * @brief 获取边界在本地空间下的大小
+ * @param obj 
+ * @param bound 
+ */
+void AgObj_GetLocalBound(AgObj* obj, AgRect* bound);
 
 // ---------------------------------------- z操作 ----------------------------------------
 /**

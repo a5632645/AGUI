@@ -12,4 +12,10 @@ typedef struct {
 } AgButton;
 
 void AgButton_Init(AgButton* obj);
+
+/**
+ * @brief 设置按钮的样式，不会触发消息
+ * @param btn 
+ * @param press 
+ */
 void AgButton_SetPress(AgButton* btn, ag_bool press);

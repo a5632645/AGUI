@@ -10,18 +10,18 @@ static void AgDrawText(PainterImpl* impl, const TextDraw* arg) {
     Color c = ColorTransfrom(arg->color);
     ag_int16 text_width = MeasureText(arg->text, arg->font_size);
     ag_int16 text_height = arg->font_size;
-    ag_int16 x = arg->rect->x + impl->painter.draw_aera.x;
-    ag_int16 y = arg->rect->y + impl->painter.draw_aera.y;
+    ag_int16 x = arg->rect.x + impl->painter.draw_aera.x;
+    ag_int16 y = arg->rect.y + impl->painter.draw_aera.y;
 
     AgAlignEnum x_align = AGUI_X_ALIGN(arg->align);
     switch (x_align) {
     case eAgAlign_XLeft:
         break;
     case eAgAlign_XCenter:
-        x += (arg->rect->w - text_width) / 2;
+        x += (arg->rect.w - text_width) / 2;
         break;
     case eAgAlign_XRight:
-        x += arg->rect->w - text_width;
+        x += arg->rect.w - text_width;
         break;
     default:
         break;
@@ -32,10 +32,10 @@ static void AgDrawText(PainterImpl* impl, const TextDraw* arg) {
     case eAgAlign_YTop:
         break;
     case eAgAlign_YCenter:
-        y += (arg->rect->h - text_height) / 2;
+        y += (arg->rect.h - text_height) / 2;
         break;
     case eAgAlign_YBottom:
-        y += arg->rect->h - text_height;
+        y += arg->rect.h - text_height;
         break;
     default:
         break;

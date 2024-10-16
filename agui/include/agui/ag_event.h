@@ -3,5 +3,6 @@
 
 typedef struct {
     ag_uint16 type;
-    void* data;
+    void* ptr1;
+    void* ptr2;
 } AgEvent;

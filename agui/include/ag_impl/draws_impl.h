@@ -1,9 +1,15 @@
+/*
+ * \file draws_impl.h
+ * \brief 在这里定义各种绘制
+ */
+
 #pragma once
 #include "agui/ag_draw.h"
 #include "agui/ag_painter.h"
 #include "agui/ag_color.h"
 #include "agui/ag_align.h"
 
+/* 最好不要动 */
 enum {
     eAgDrawType_Pixel = 0,
     eAgDrawType_Line,
@@ -48,7 +54,7 @@ void FillDraw_Init(FillDraw* draw, AgPainter* painter);
 typedef struct {
     AgDraw draw;
     const char* text;
-    const AgRect* rect;
+    AgRect rect;
     ag_uint32 font_size;
     AgAlignEnum align;
     AgColor color;

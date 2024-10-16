@@ -16,6 +16,7 @@ typedef struct {
  * @brief 初始化
  * @param ks 
  * @param root 
+ * @param highlight 高亮组件
  */
 void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight);
 

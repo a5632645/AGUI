@@ -1,4 +1,5 @@
 #include "ag_comp/button.h"
+#include "ag_comp/ag_dbg.h"
 
 // ---------------------------------------- impl ----------------------------------------
 static void _Draw(AgObj* obj, AgPainter* painter) {
@@ -12,31 +13,32 @@ static void _Draw(AgObj* obj, AgPainter* painter) {
 
     /* 背景 */
     FillDraw fill = {
-        .rect = obj->local_bound,
         .color = AG_COLOR_GRAY,
     };
     FillDraw_Init(&fill, painter);
+    AgObj_GetLocalBound(obj, &fill.rect);
     painter->call_draw(painter, &fill.draw);
+    const AgRect* local_bound = &fill.rect;
 
     /* 边框 */
     RectDraw rect = {
-        .rect = obj->local_bound,
         .color = top_left
     };
     RectDraw_Init(&rect, painter);
+    AgObj_GetLocalBound(obj, &rect.rect);
     painter->call_draw(painter, &rect.draw);
 
     LineDraw line = {
-        .x1 = obj->local_bound.x + obj->local_bound.w ,
-        .y1 = obj->local_bound.y,
-        .x2 = obj->local_bound.x + obj->local_bound.w,
-        .y2 = obj->local_bound.y + obj->local_bound.h,
+        .x1 = local_bound->x + local_bound->w ,
+        .y1 = local_bound->y,
+        .x2 = local_bound->x + local_bound->w,
+        .y2 = local_bound->y + local_bound->h,
         .color = bottom_right
     };
     LineDraw_Init(&line, painter);
     painter->call_draw(painter, &line.draw);
 
-    line.x1 = obj->local_bound.x;
+    line.x1 = local_bound->x;
     line.y1 = line.y2;
     painter->call_draw(painter, &line.draw);
 
@@ -46,10 +48,12 @@ static void _Draw(AgObj* obj, AgPainter* painter) {
         .align = eAgAlign_Center,
         .font_size = btn->font_size,
         .text = btn->text,
-        .rect = &obj->local_bound
     };
     TextDraw_Init(&text, painter);
+    AgObj_GetLocalBound(obj, &text.rect);
     painter->call_draw(painter, &text.draw);
+
+    AgDbg_DrawFrame(obj, painter);
 }
 
 // ---------------------------------------- public ----------------------------------------
@@ -61,5 +65,5 @@ void AgButton_Init(AgButton* obj) {
 
 void AgButton_SetPress(AgButton* btn, ag_bool press) {
     btn->press = press;
-    AgObj_MarkRedraw(&btn->obj);
+    AgObj_Redraw(&btn->obj);
 }
