@@ -21,6 +21,8 @@ static ag_bool _ActionFilter(AgObj*, AgKeySwitActionEnum) {
     return ag_true;
 }
 
+static void _ObjSelected(AgObj*) {}
+
 // ---------------------------------------- public ----------------------------------------
 /**
  * @brief 初始化
@@ -33,6 +35,10 @@ void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight) {
     ks->highlight = highlight;
     AgObj_AddChildAtBack(ks->root, ks->highlight);
     AgObj_SetBound(ks->highlight, &ks->current->bound);
+
+    ks->filter = _Filter;
+    ks->action_filter = _ActionFilter;
+    ks->obj_selected = _ObjSelected;
 }
 
 /**
@@ -43,6 +49,7 @@ void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight) {
 void AgKeySwitcher_SetCurrent(AgKeySwitcher* ks, AgObj* obj) {
     ks->current = obj;
     _AddToSameLayer(obj, ks->highlight);
+    ks->obj_selected(obj);
 }
 
 /**
@@ -75,6 +82,7 @@ void AgKeySwitcher_GoDown(AgKeySwitcher* ks) {
     else {
         AgKeySwitcher_GoRoot(ks);
     }
+    ks->obj_selected(ks->current);
 }
 
 /**
@@ -93,6 +101,7 @@ void AgKeySwitcher_GoUp(AgKeySwitcher* ks) {
     }
     ks->current = ks->current->parent;
     _AddToSameLayer(ks->current, ks->highlight);
+    ks->obj_selected(ks->current);
 }
 
 /**
@@ -115,7 +124,8 @@ void AgKeySwitcher_GoNext(AgKeySwitcher* ks) {
     } while (ks->current == ks->highlight 
             || (NULL != ks->current && ks->current->flags.visiable == ag_false)
             || ks->filter(ks->current) == ag_false);
-    AgObj_SetBound(ks->highlight, &ks->current->bound);
+    _AddToSameLayer(ks->current, ks->highlight);
+    ks->obj_selected(ks->current);
 }
 
 /**
@@ -138,7 +148,8 @@ void AgKeySwitcher_GoPrev(AgKeySwitcher* ks) {
     } while (ks->current == ks->highlight
             || (NULL != ks->current && ks->current->flags.visiable == ag_false)
             || ks->filter(ks->current) == ag_false);
-    AgObj_SetBound(ks->highlight, &ks->current->bound);
+    _AddToSameLayer(ks->current, ks->highlight);
+    ks->obj_selected(ks->current);
 }
 
 /**
@@ -151,4 +162,5 @@ void AgKeySwitcher_GoRoot(AgKeySwitcher* ks) {
     }
     ks->current = ks->root;
     _AddToSameLayer(ks->current, ks->highlight);
+    ks->obj_selected(ks->current);
 }

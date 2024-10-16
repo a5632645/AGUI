@@ -18,8 +18,12 @@ typedef struct {
     AgObj* root;
     AgObj* current;
     AgObj* highlight;
+    /* 是否选择该obj, 返回值为ag_true表示该obj能被选中 */
     ag_bool(*filter)(AgObj* obj);
+    /* 是否能发生该action, 返回值为ag_true表示该action能被触发 */
     ag_bool(*action_filter)(AgObj* curr, AgKeySwitActionEnum action);
+    /* obj被选中时的回调 */
+    void(*obj_selected)(AgObj* obj);
 } AgKeySwitcher;
 
 /**
