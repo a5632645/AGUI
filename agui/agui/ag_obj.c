@@ -1,8 +1,16 @@
 #include "agui/ag_obj.h"
 #include "ag_comp/ag_dbg.h"
+#include "ag_impl/draws_impl.h"
 
 // ---------------------------------------- impl ----------------------------------------
-static void Draw(AgObj* obj, AgPainter* painter) {}
+static void Draw(AgObj* obj, AgPainter* painter) {
+    AgFillDraw fill = {
+        .color = AG_COLOR_BLACK,
+    };
+    AgFillDraw_Init(&fill, painter);
+    AgObj_GetLocalBound(obj, &fill.rect);
+    painter->call_draw(painter, &fill.draw);
+}
 static void Event(AgObj* obj, const AgEvent* e) {}
 static void Laytout(AgObj* obj) {}
 
@@ -11,7 +19,7 @@ static void _InitFlags(AgObj* obj) {
     obj->flags.redraw = ag_true;
     obj->flags.invalid = ag_true;
     obj->flags.visiable = ag_true;
-    obj->flags.transpant = ag_true;
+    obj->flags.transpant = ag_false;
 }
 
 static void _InitVFunc(AgObj* obj) {
@@ -78,9 +86,7 @@ extern void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter);
 static void _DrawObj(AgObj* obj, AgPainter* painter) {
     if (NULL != obj) {
         /* 保存绘制区 */
-        ag_int16 bck_w = painter->draw_aera.w;
-        ag_int16 bck_h = painter->draw_aera.h;
-        ag_bool always_draw = painter->always_redraw;
+        AgPainter_SaveState(painter);
         /* 移动绘制区 */
         painter->draw_aera.x += obj->bound.x;
         painter->draw_aera.y += obj->bound.y;
@@ -124,11 +130,7 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
         }
 
         /* 还原绘制区 */
-        painter->always_redraw = always_draw;
-        painter->draw_aera.w = bck_w;
-        painter->draw_aera.h = bck_h;
-        painter->draw_aera.x -= obj->bound.x;
-        painter->draw_aera.y -= obj->bound.y;
+        AgPainter_RestoreState(painter);
     }
 }
 
@@ -189,8 +191,10 @@ void AgObj_RemoveChild(AgObj* obj, AgObj* child) {
 }
 
 void AgObj_DrawObj(AgObj* obj, AgPainter* painter) {
-    AgObj_GetLocalBound(obj, &painter->draw_aera);
-    painter->always_redraw = ag_false;
+    AgRect rt;
+    AgObj_GetLocalBound(obj, &rt);
+    AgPainter_PrepareDraw(painter, &rt);
+
     painter->begin_frame(painter);
     _DrawObj(obj, painter);
     painter->end_frame(painter);
@@ -372,7 +376,8 @@ void AgObj_CalcBound(AgObj* obj) {
 
 void AgObj_SendEvent(AgObj* obj, AgEvent* event) {
     while (NULL != obj && ag_false == event->handled) {
+        AgObj* parent = obj->parent;
         obj->vfunc.event(obj, event);
-        obj = obj->parent;
+        obj = parent;
     }
 }

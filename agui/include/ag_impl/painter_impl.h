@@ -1,6 +1,6 @@
 /*
  * \file painter_impl.h
- * \brief 在这里实现AgPainter接口
+ * \brief 在这里实现AgPainter接口，需要自己适配
 */
 
 #pragma once

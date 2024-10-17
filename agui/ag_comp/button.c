@@ -8,7 +8,7 @@ static void _Draw(AgObj* obj, AgPainter* painter) {
     AgColor bottom_right = AG_COLOR_BLACK;
     if (ag_true == btn->press) {
         top_left = AG_COLOR_BLACK;
-        bottom_right = AG_COLOR_WHITE;
+        bottom_right = AG_COLOR_GRAY;
     }
 
     /* 背景 */
@@ -22,24 +22,36 @@ static void _Draw(AgObj* obj, AgPainter* painter) {
 
     /* 边框 */
     AgRectDraw rect = {
-        .color = top_left
+        .color = AG_COLOR_BLACK,
+        .rect = *local_bound
     };
     AgRectDraw_Init(&rect, painter);
     AgObj_GetLocalBound(obj, &rect.rect);
     painter->call_draw(painter, &rect.draw);
 
+    /* 高亮阴影 */
+    AgRect_Expand(&fill.rect, -1, -1);
     AgLineDraw line = {
-        .x1 = local_bound->x + local_bound->w ,
-        .y1 = local_bound->y,
-        .x2 = local_bound->x + local_bound->w,
-        .y2 = local_bound->y + local_bound->h,
-        .color = bottom_right
+        .color = top_left,
+        .x1 = fill.rect.x,
+        .y1 = fill.rect.y,
+        .x2 = fill.rect.x + fill.rect.w,
+        .y2 = fill.rect.y,
     };
     AgLineDraw_Init(&line, painter);
     painter->call_draw(painter, &line.draw);
 
-    line.x1 = local_bound->x;
-    line.y1 = line.y2;
+    line.x2 = fill.rect.x;
+    line.y2 = fill.rect.y + fill.rect.h;
+    painter->call_draw(painter, &line.draw);
+
+    line.color = bottom_right;
+    line.x1 = fill.rect.x + fill.rect.w;
+    line.y1 = fill.rect.y + fill.rect.h;
+    painter->call_draw(painter, &line.draw);
+
+    line.x2 = fill.rect.x + fill.rect.w;
+    line.y2 = fill.rect.y;
     painter->call_draw(painter, &line.draw);
 
     /* 文字 */

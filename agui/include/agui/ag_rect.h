@@ -30,4 +30,18 @@ ag_bool AgRect_Equal(const AgRect* rect1, const AgRect* rect2);
  */
 ag_bool AgRect_IsIntersected(const AgRect* rect1, const AgRect* rect2);
 
+/**
+ * @brief 复制矩形
+ * @param dest 不能为NULL
+ * @param src 不能为NULL
+ */
 void AgRect_Copy(AgRect* dest, const AgRect* src);
+
+/**
+ * @brief 扩大或者缩小矩形
+ * @param rect 不能为NULL
+ * @param dx left-> <-right
+ * @param dy top   ↓
+ *           bootom↑
+ */
+void AgRect_Expand(AgRect* rect, ag_int16 dx, ag_int16 dy);

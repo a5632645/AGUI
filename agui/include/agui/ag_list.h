@@ -68,6 +68,13 @@ ag_bool AgList_IsEmpty(AgList* list);
 void AgList_Cut(AgList* list, AgList* ret, AgListNode* node);
 
 /**
+ * @brief 连接两个链表
+ * @param list 不可为NULL
+ * @param other 可为NULL
+ */
+void AgList_Append(AgList* list, AgList* other);
+
+/**
  * @brief 初始化节点
  * @param node 
  */

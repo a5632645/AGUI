@@ -24,6 +24,7 @@ typedef struct {
         eKey_Right,
         eKey_Enter
     } key;
+    ag_bool up;
 } KeyEvent;
 
 static AgObj root;
@@ -113,13 +114,18 @@ static void Buttons_Event(AgKeySwitcher* ks, AgEvent* event) {
         KeyEvent* e = AGUI_CONTAINER_OF(KeyEvent, event, event);
         switch (e->key) {
         case eKey_Up:
+        if (ag_false == e->up) {
             AgKeySwitcher_GoPrev(&switcher);
+        }
             break;
         case eKey_Down:
+        if (ag_false == e->up) {
             AgKeySwitcher_GoNext(&switcher);
+        }
             break;
         case eKey_Right:
             /* 选择器到栈布局器的当前页面 */
+            if (ag_false == e->up)
             {
                 AgObj* page = AgStackLayout_Current(&sl);
                 if (NULL != page) {
@@ -134,6 +140,12 @@ static void Buttons_Event(AgKeySwitcher* ks, AgEvent* event) {
                     }
                 }
             }
+            break;
+        case eKey_Enter:
+        {
+            AgButton* btn = AGUI_CONTAINER_OF(AgButton, obj, ks->current);
+            AgButton_SetPress(btn, !e->up);
+        }
             break;
         default:
             break;
@@ -257,16 +269,6 @@ static void Root_Init() {
     AgKeySwitcher_Goto(&switcher, &btn1.obj);
 }
 
-// ---------------------------------------- clear ----------------------------------------
-static void ClearDraw(AgObj* obj, AgPainter* painter) {
-    AgFillDraw fill = {
-        .color = AG_COLOR_BLACK,
-    };
-    AgFillDraw_Init(&fill, painter);
-    AgObj_GetLocalBound(obj, &fill.rect);
-    painter->call_draw(painter, &fill.draw);
-}
-
 // ---------------------------------------- main ----------------------------------------
 int main(int argc, char** argv) {
     InitWindow(800, 450, "raylib [core] example - basic window");
@@ -285,12 +287,12 @@ int main(int argc, char** argv) {
     };
     Root_Init();
     AgObj_SetBound(&root, &rect);
-    root.vfunc.draw = ClearDraw;
 
     while (!WindowShouldClose()) {
         /* event */
         KeyEvent e = {
             .key = eKey_None,
+            .up = ag_false,
             .event = {
                 .handled = ag_false,
                 .sender = NULL,
@@ -300,17 +302,40 @@ int main(int argc, char** argv) {
         if (IsKeyPressed(KEY_RIGHT)) {
             e.key = eKey_Right;
         }
+        if (IsKeyReleased(KEY_RIGHT)) {
+            e.key = eKey_Right;
+            e.up = ag_true;
+        }
         if (IsKeyPressed(KEY_LEFT)) {
             e.key = eKey_Left;
+        }
+        if (IsKeyReleased(KEY_LEFT)) {
+            e.key = eKey_Left;
+            e.up = ag_true;
         }
         if (IsKeyPressed(KEY_UP)) {
             e.key = eKey_Up;
         }
+        if (IsKeyReleased(KEY_UP)) {
+            e.key = eKey_Up;
+            e.up = ag_true;
+        }
         if (IsKeyPressed(KEY_DOWN)) {
             e.key = eKey_Down;
         }
+        if (IsKeyPressed(KEY_DOWN)) {
+            e.key = eKey_Down;
+        }
+        if (IsKeyReleased(KEY_DOWN)) {
+            e.key = eKey_Down;
+            e.up = ag_true;
+        }
         if (IsKeyPressed(KEY_ENTER)) {
             e.key = eKey_Enter;
+        }
+        if (IsKeyReleased(KEY_ENTER)) {
+            e.key = eKey_Enter;
+            e.up = ag_true;
         }
         if (e.key != eKey_None) {
             AgKeySwitcher_SendEvent(&switcher, &e.event);

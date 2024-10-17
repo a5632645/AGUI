@@ -111,6 +111,29 @@ void AgList_Cut(AgList* list, AgList* ret, AgListNode* node) {
     node->prev = NULL;
 }
 
+void AgList_Append(AgList* list, AgList* other) {
+    if (!list || !other) {
+        return;
+    }
+    if (AgList_IsEmpty(other)) {
+        return;
+    }
+    
+    if (AgList_IsEmpty(list)) {
+        list->head = other->head;
+        list->tail = other->tail;
+        other->head = NULL;
+        other->tail = NULL;
+    }
+    else {
+        other->head->prev = list->tail;
+        list->tail->next = other->head;
+        list->tail = other->tail;
+        other->head = NULL;
+        other->tail = NULL;
+    }
+}
+
 // ---------------------------------------- AgListNode ----------------------------------------
 void AgListNode_Init(AgListNode* node) {
     node->next = NULL;

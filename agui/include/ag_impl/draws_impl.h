@@ -1,6 +1,6 @@
 /*
  * \file draws_impl.h
- * \brief 在这里定义各种绘制
+ * \brief 在这里定义各种绘制，不要修改，可以增加
  */
 
 #pragma once
@@ -17,7 +17,9 @@ enum {
     eAgDrawType_Fill,
     eAgDrawType_Text,
     eAgDrawType_Img,
-    eAgDrawType_Invert
+    eAgDrawType_Invert,
+    eAgDrawType_NumSystem
+    /* 可以添加自定义 */
 };
 
 typedef struct {

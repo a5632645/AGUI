@@ -49,3 +49,10 @@ void AgRect_Copy(AgRect* dest, const AgRect* src) {
     dest->w = src->w;
     dest->h = src->h;
 }
+
+void AgRect_Expand(AgRect* rect, ag_int16 dx, ag_int16 dy) {
+    rect->x -= dx;
+    rect->y -= dy;
+    rect->w += dx * 2;
+    rect->h += dy * 2;
+}

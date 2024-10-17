@@ -45,6 +45,7 @@ void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight) {
  * @param obj 
  */
 void AgKeySwitcher_Goto(AgKeySwitcher* ks, AgObj* obj) {
+    AgObj_Redraw(ks->highlight->parent);
     ks->current = obj;
     _AddToSameLayer(obj, ks->highlight);
     ks->obj_selected(obj);

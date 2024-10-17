@@ -14,6 +14,8 @@ typedef int8_t ag_int8;
 typedef float ag_float;
 typedef double ag_double;
 
+typedef size_t ag_size_t;
+
 #ifndef bool
 typedef uint8_t ag_bool;
 #else

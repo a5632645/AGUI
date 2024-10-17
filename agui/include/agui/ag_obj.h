@@ -24,7 +24,7 @@ enum {
 };
 
 /**
- * @brief 节点
+ * @brief 节点，默认填充黑色
  */
 typedef struct __AgObj {
     /* 同层级链接 */
@@ -231,9 +231,8 @@ void AgObj_SendToBack(AgObj* obj);
 
 // ---------------------------------------- 奇怪的操作 ----------------------------------------
 /**
- * @brief 计算节点的边界
+ * @brief 计算节点的边界，大小为0会被计算
  * @param obj 
- * 没有Clip操作，就算边界不对也会显示
  */
 void AgObj_CalcBound(AgObj* obj);
 
