@@ -59,9 +59,12 @@ static void _Draw(AgObj* obj, AgPainter* painter) {
 // ---------------------------------------- public ----------------------------------------
 void AgButton_Init(AgButton* obj) {
     AgObj_Init(&obj->obj);
-    obj->press = ag_false;
-    obj->obj.vfunc.draw = _Draw;
     obj->obj.obj_type = eAgObjType_Button;
+    obj->obj.vfunc.draw = _Draw;
+    obj->press = ag_false;
+    obj->color = AG_COLOR_WHITE;
+    obj->font_size = 16;
+    obj->text = "button";
 }
 
 void AgButton_SetPress(AgButton* btn, ag_bool press) {

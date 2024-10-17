@@ -1,8 +1,11 @@
 #pragma once
 #include "agui/ag_types.h"
 
+struct __AgObj;
+
 typedef struct {
+    ag_bool handled;
     ag_uint16 type;
-    void* ptr1;
-    void* ptr2;
+    struct __AgObj* sender;
+    void* ptr;
 } AgEvent;

@@ -30,4 +30,8 @@ void AgTextView_Init(AgTextView* tv) {
     _InitVFunc(&tv->obj.vfunc);
     tv->obj.flags.transpant = ag_true;
     tv->obj.obj_type = eAgObjType_TextView;
+    tv->align = eAgAlign_None;
+    tv->color = AG_COLOR_WHITE;
+    tv->font_size = 16;
+    tv->text = "TextView";
 }

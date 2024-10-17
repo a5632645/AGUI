@@ -46,7 +46,6 @@ static void AgDrawText(PainterImpl* impl, const TextDraw* arg) {
 
 // ---------------------------------------- function impl ----------------------------------------
 static void* GetBackend(AgPainter* painter) {
-    PainterImpl* impl = AGUI_CONTAINER_OF(PainterImpl, painter, painter);
     return NULL;
 }
 

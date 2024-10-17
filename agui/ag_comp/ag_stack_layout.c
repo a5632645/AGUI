@@ -33,6 +33,7 @@ void AgStackLayout_Init(AgStackLayout* sl) {
     AgList_Init(&sl->stack);
 
     sl->obj.vfunc.layout = _Layout;
+    sl->obj.obj_type = eAgObjType_StackLayout;
 }
 
 void AgStackLayout_Push(AgStackLayout* sl, AgObj* obj) {
@@ -106,5 +107,6 @@ AgObj* AgStackLayout_Pop(AgStackLayout* sl) {
 
 AgObj* AgStackLayout_Current(AgStackLayout* sl) {
     AgListNode* curr = sl->obj.childern.head;
-    return AGUI_CONTAINER_OF(AgObj, node, curr);
+    AgObj* obj = AGUI_CONTAINER_OF(AgObj, node, curr);
+    return obj;
 }

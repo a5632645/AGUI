@@ -42,3 +42,10 @@ ag_bool AgRect_IsIntersected(const AgRect* rect1, const AgRect* rect2) {
              rect1_bottom <= rect2_top || 
              rect1_top >= rect2_bottom);
 }
+
+void AgRect_Copy(AgRect* dest, const AgRect* src) {
+    dest->x = src->x;
+    dest->y = src->y;
+    dest->w = src->w;
+    dest->h = src->h;
+}

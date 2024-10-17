@@ -13,15 +13,15 @@ static void _AddToSameLayer(AgObj* obj, AgObj* highlight) {
 }
 
 // ---------------------------------------- impl ----------------------------------------
-static ag_bool _Filter(AgObj*) {
+static ag_bool _Filter(AgObj* obj) {
     return ag_true;
 }
 
-static ag_bool _ActionFilter(AgObj*, AgKeySwitActionEnum) {
+static ag_bool _ActionFilter(AgObj* obj, AgKeySwitActionEnum action) {
     return ag_true;
 }
 
-static void _ObjSelected(AgObj*) {}
+static void _ObjSelected(AgObj* obj) {}
 
 // ---------------------------------------- public ----------------------------------------
 /**

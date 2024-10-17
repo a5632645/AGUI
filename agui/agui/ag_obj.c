@@ -1,13 +1,13 @@
 #include "agui/ag_obj.h"
 #include "ag_comp/ag_dbg.h"
 
-// ---------------------------------------- 虚函数 ----------------------------------------
+// ---------------------------------------- 铏氬嚱鏁?----------------------------------------
 #if AGUI_DBG_WRIE_FRAME == 0
 static void _AgObj_Draw(AgObj* obj, AgPainter* painter) {}
 #else
 extern void _AgObj_Draw(AgObj* obj, AgPainter* painter);
 #endif
-static void Event(AgObj*, const AgEvent*) {}
+static void Event(AgObj* obj, const AgEvent* e) {}
 static void Laytout(AgObj* obj) {}
 
 // --------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ static void __PopUpRedraw(AgObj* obj, const AgRect* bound) {
     rect.y += obj->bound.y;
     obj->flags.invalid = ag_true;
     
-    /* 同层级标记redraw */
+    /* 鍚屽眰绾ф爣璁皉edraw */
     AgListNode* node = obj->node.next;
     while (NULL != node) {
         AgObj* other = AGUI_CONTAINER_OF(AgObj, node, node);
@@ -74,17 +74,17 @@ static void _ReDraw(AgObj* obj) {
 }
 
 /**
- * @brief 递归绘制节点，超出范围的节点也会被绘制！
+ * @brief 閫掑綊缁樺埗鑺傜偣锛岃秴鍑鸿寖鍥寸殑鑺傜偣涔熶細琚粯鍒讹紒
  * @param obj 
  * @param painter 
  */
 static void _DrawObj(AgObj* obj, AgPainter* painter) {
     if (NULL != obj) {
-        /* 保存绘画区域 */
+        /* 淇濆瓨缁樼敾鍖哄煙 */
         ag_int16 bck_w = painter->draw_aera.w;
         ag_int16 bck_h = painter->draw_aera.h;
         ag_bool always_draw = painter->always_redraw;
-        /* 移动绘画区域 */
+        /* 绉诲姩缁樼敾鍖哄煙 */
         painter->draw_aera.x += obj->bound.x;
         painter->draw_aera.y += obj->bound.y;
         painter->draw_aera.w = obj->bound.w;
@@ -95,13 +95,13 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
         }
         
         if (ag_true == painter->always_redraw) {
-            /* 挡该标记时，忽略无效和绘制标记，这说明该节点以下都需要绘制 */
+            /* 鎸¤鏍囪鏃讹紝蹇界暐鏃犳晥鍜岀粯鍒舵爣璁帮紝杩欒鏄庤鑺傜偣浠ヤ笅閮介渶瑕佺粯鍒?*/
             obj->flags.invalid = ag_false;
             if (ag_true == obj->flags.visiable) {
-                /* 绘制自己 */
+                /* 缁樺埗鑷繁 */
                 obj->flags.redraw = ag_false;
                 obj->vfunc.draw(obj, painter);
-                /* 绘制子节点 */
+                /* 缁樺埗瀛愯妭鐐?*/
                 AgListNode* node = obj->childern.head;
                 while (NULL != node) {
                     AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
@@ -114,7 +114,7 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
             if (ag_true == obj->flags.invalid) {
                 obj->flags.invalid = ag_false;
                 if (ag_true == obj->flags.visiable) {
-                    /* 绘制子节点 */
+                    /* 缁樺埗瀛愯妭鐐?*/
                     AgListNode* node = obj->childern.head;
                     while (NULL != node) {
                         AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
@@ -125,7 +125,7 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
             }
         }
 
-        /* 恢复绘画区域 */
+        /* 鎭㈠缁樼敾鍖哄煙 */
         painter->always_redraw = always_draw;
         painter->draw_aera.w = bck_w;
         painter->draw_aera.h = bck_h;
@@ -134,7 +134,7 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
     }
 }
 
-// ---------------------------------------- 初始化 ----------------------------------------
+// ---------------------------------------- 鍒濆鍖?----------------------------------------
 void AgObj_Init(AgObj* obj) {
     AgListNode_Init(&obj->node);
     obj->parent = NULL;
@@ -144,10 +144,10 @@ void AgObj_Init(AgObj* obj) {
     AgRect_Zero(&obj->bound);
 
     obj->obj_type = eAgObjType_Obj;
-    obj->id = -1;
+    obj->id = 0;
 }
 
-// ---------------------------------------- 子节点 ----------------------------------------
+// ---------------------------------------- 瀛愯妭鐐?----------------------------------------
 void AgObj_AddChild(AgObj* obj, AgObj* child) {
     AgList_PushBack(&obj->childern, &child->node);
     child->parent = obj;
@@ -230,7 +230,7 @@ AgObj* AgObj_HitObj(AgObj* obj, ag_int16 x, ag_int16 y) {
     return NULL;
 }
 
-// ---------------------------------------- 状态操作 ----------------------------------------
+// ---------------------------------------- 鐘舵€佹搷浣?----------------------------------------
 void AgObj_SetVisiable(AgObj* obj, ag_bool visiable) {
     if (obj->flags.visiable == visiable) {
         return;
@@ -248,7 +248,7 @@ void AgObj_Redraw(AgObj* obj) {
     }
 }
 
-// ---------------------------------------- 布局 ----------------------------------------
+// ---------------------------------------- 甯冨眬 ----------------------------------------
 void AgObj_DoLayout(AgObj* obj) {
     obj->vfunc.layout(obj);
 }
@@ -257,7 +257,7 @@ void AgObj_SetBound(AgObj* obj, const AgRect* bound) {
     if (ag_true == AgRect_Equal(&obj->bound, bound)) {
         return;
     }
-    obj->bound = *bound;
+    AgRect_Copy(&obj->bound, bound);
     obj->vfunc.layout(obj);
     _ReDraw(obj->parent);
 }
@@ -290,7 +290,7 @@ void AgObj_GetLocalBound(AgObj* obj, AgRect* bound) {
     bound->h = obj->bound.h;
 }
 
-// ---------------------------------------- z操作 ----------------------------------------
+// ---------------------------------------- z鎿嶄綔 ----------------------------------------
 void AgObj_BringToFront(AgObj* obj) {
     if (NULL == obj->parent) {
         return;
@@ -309,7 +309,7 @@ void AgObj_SendToBack(AgObj* obj) {
     _ReDraw(obj->parent);
 }
 
-// ---------------------------------------- 奇怪的操作 ----------------------------------------
+// ---------------------------------------- 濂囨€殑鎿嶄綔 ----------------------------------------
 static void _CalcSingleBound(AgObj* obj) {
     if (ag_false == AgList_IsEmpty(&obj->childern)
         && (obj->bound.w == 0 || obj->bound.h == 0)) {
@@ -350,5 +350,8 @@ void AgObj_CalcBound(AgObj* obj) {
 }
 
 void AgObj_SendEvent(AgObj* obj, AgEvent* event) {
-    obj->vfunc.event(obj, event);
+    while (NULL != obj && ag_false == event->handled) {
+        obj->vfunc.event(obj, event);
+        obj = obj->parent;
+    }
 }

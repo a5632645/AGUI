@@ -5,6 +5,7 @@
 
 #pragma once
 #include "agui/ag_obj.h"
+#include "agui/ag_types.h"
 
 typedef enum {
     eAgKeyAction_GoDown = 0,

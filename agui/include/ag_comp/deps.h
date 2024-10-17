@@ -5,6 +5,8 @@
 #include "agui/ag_align.h"
 
 enum {
-    eAgObjType_TextView = 0,
+    eAgObjType_TextView = 1,
     eAgObjType_Button,
+    eAgObjType_StackLayout,
+    eAgObjType_NumSystem
 };

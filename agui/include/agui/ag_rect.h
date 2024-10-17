@@ -29,3 +29,5 @@ ag_bool AgRect_Equal(const AgRect* rect1, const AgRect* rect2);
  * @return 
  */
 ag_bool AgRect_IsIntersected(const AgRect* rect1, const AgRect* rect2);
+
+void AgRect_Copy(AgRect* dest, const AgRect* src);
