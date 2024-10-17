@@ -132,6 +132,7 @@ static void CallDraw(AgPainter* painter, const AgDraw* arg) {
 
 // ---------------------------------------- public ----------------------------------------
 void PainterImpl_Init(PainterImpl* impl) {
+    AgPainter_Init(&impl->painter);
     impl->painter.begin_frame = BeginFrame;
     impl->painter.end_frame = EndFrame;
     impl->painter.get_backend = GetBackend;
