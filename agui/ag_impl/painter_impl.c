@@ -6,7 +6,7 @@ static Color ColorTransfrom(AgColor color) {
     return (Color){color.r, color.g, color.b, color.a};
 }
 
-static void AgDrawText(PainterImpl* impl, const TextDraw* arg) {
+static void AgDrawText(PainterImpl* impl, const AgTextDraw* arg) {
     Color c = ColorTransfrom(arg->color);
     ag_int16 text_width = MeasureText(arg->text, arg->font_size);
     ag_int16 text_height = arg->font_size;
@@ -50,11 +50,12 @@ static void* GetBackend(AgPainter* painter) {
 }
 
 static void BeginFrame(AgPainter* painter) {
-    BeginDrawing();
+    PainterImpl* impl = AGUI_CONTAINER_OF(PainterImpl, painter, painter);
+    BeginTextureMode(impl->texture);
 }
 
 static void EndFrame(AgPainter* painter) {
-    EndDrawing();
+    EndTextureMode();
 }
 
 static void CallDraw(AgPainter* painter, const AgDraw* arg) {
@@ -63,7 +64,7 @@ static void CallDraw(AgPainter* painter, const AgDraw* arg) {
     ag_int16 y = painter->draw_aera.y;
     switch (arg->type) {
     case eAgDrawType_Fill: {
-        FillDraw* draw = (FillDraw*)arg;
+        AgFillDraw* draw = (AgFillDraw*)arg;
         Color c = ColorTransfrom(draw->color);
         DrawRectangle(x + draw->rect.x,
                        y + draw->rect.y,
@@ -77,7 +78,7 @@ static void CallDraw(AgPainter* painter, const AgDraw* arg) {
     }
     break;
     case eAgDrawType_Line: {
-        LineDraw* draw = (LineDraw*)arg;
+        AgLineDraw* draw = (AgLineDraw*)arg;
         Color c = ColorTransfrom(draw->color);
         DrawLine(x + draw->x1,
                  y + draw->y1,
@@ -87,7 +88,7 @@ static void CallDraw(AgPainter* painter, const AgDraw* arg) {
     }
     break;
     case eAgDrawType_Pixel: {
-        PixelDraw* draw = (PixelDraw*)arg;
+        AgPixelDraw* draw = (AgPixelDraw*)arg;
         Color c = ColorTransfrom(draw->color);
         DrawPixel(x + draw->x,
                   y + draw->y,
@@ -95,7 +96,7 @@ static void CallDraw(AgPainter* painter, const AgDraw* arg) {
     }
     break;
     case eAgDrawType_Rect: {
-        RectDraw* draw = (RectDraw*)arg;
+        AgRectDraw* draw = (AgRectDraw*)arg;
         Color c = ColorTransfrom(draw->color);
         DrawRectangleLines(x + draw->rect.x,
                            y + draw->rect.y,
@@ -105,8 +106,22 @@ static void CallDraw(AgPainter* painter, const AgDraw* arg) {
     }
     break;
     case eAgDrawType_Text: {
-        TextDraw* draw = (TextDraw*)arg;
+        AgTextDraw* draw = (AgTextDraw*)arg;
         AgDrawText(impl, draw);
+    }
+    break;
+    case eAgDrawType_Invert: {
+        AgInvertDraw* draw = AGUI_CONTAINER_OF(AgInvertDraw, draw, arg);
+        Image img = LoadImageFromTexture(impl->texture.texture);
+        ImageColorInvert(&img);
+        Rectangle rt = {
+            .x = x + draw->rect.x,
+            .y = y + draw->rect.y,
+            .width = draw->rect.w,
+            .height = draw->rect.h
+        };
+        UpdateTextureRec(impl->texture.texture, rt, img.data);
+        UnloadImage(img);
     }
     break;
     default:
@@ -121,4 +136,7 @@ void PainterImpl_Init(PainterImpl* impl) {
     impl->painter.end_frame = EndFrame;
     impl->painter.get_backend = GetBackend;
     impl->painter.call_draw = CallDraw;
+    int w = GetScreenWidth();
+    int h = GetScreenHeight();
+    impl->texture = LoadRenderTexture(w, h);
 }

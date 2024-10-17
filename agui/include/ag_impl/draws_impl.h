@@ -16,7 +16,8 @@ enum {
     eAgDrawType_Rect,
     eAgDrawType_Fill,
     eAgDrawType_Text,
-    eAgDrawType_Img
+    eAgDrawType_Img,
+    eAgDrawType_Invert
 };
 
 typedef struct {
@@ -24,8 +25,8 @@ typedef struct {
     ag_int16 x;
     ag_int16 y;
     AgColor color;
-} PixelDraw;
-void PixelDraw_Init(PixelDraw* draw, AgPainter* painter);
+} AgPixelDraw;
+void AgPixelDraw_Init(AgPixelDraw* draw, AgPainter* painter);
 
 typedef struct {
     AgDraw draw;
@@ -34,22 +35,22 @@ typedef struct {
     ag_int16 x2;
     ag_int16 y2;
     AgColor color;
-} LineDraw;
-void LineDraw_Init(LineDraw* draw, AgPainter* painter);
+} AgLineDraw;
+void AgLineDraw_Init(AgLineDraw* draw, AgPainter* painter);
 
 typedef struct {
     AgDraw draw;
     AgRect rect;
     AgColor color;
-} RectDraw;
-void RectDraw_Init(RectDraw* draw, AgPainter* painter);
+} AgRectDraw;
+void AgRectDraw_Init(AgRectDraw* draw, AgPainter* painter);
 
 typedef struct {
     AgDraw draw;
     AgRect rect;
     AgColor color;
-} FillDraw;
-void FillDraw_Init(FillDraw* draw, AgPainter* painter);
+} AgFillDraw;
+void AgFillDraw_Init(AgFillDraw* draw, AgPainter* painter);
 
 typedef struct {
     AgDraw draw;
@@ -58,8 +59,8 @@ typedef struct {
     ag_uint32 font_size;
     AgAlignEnum align;
     AgColor color;
-} TextDraw;
-void TextDraw_Init(TextDraw* draw, AgPainter* painter);
+} AgTextDraw;
+void AgTextDraw_Init(AgTextDraw* draw, AgPainter* painter);
 
 typedef struct {
     AgDraw draw;
@@ -67,5 +68,11 @@ typedef struct {
     ag_int16 x;
     ag_int16 y;
     AgColor color;
-} ImgDraw;
-void ImgDraw_Init(ImgDraw* draw, AgPainter* painter);
+} AgImgDraw;
+void AgImgDraw_Init(AgImgDraw* draw, AgPainter* painter);
+
+typedef struct {
+    AgDraw draw;
+    AgRect rect;
+} AgInvertDraw;
+void AgInvertDraw_Init(AgInvertDraw* draw, AgPainter* painter);

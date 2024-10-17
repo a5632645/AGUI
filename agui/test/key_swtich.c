@@ -9,6 +9,23 @@
 #include "agui/layout/ag_im_layout.h"
 #include "ag_key/ag_key.h"
 
+// ---------------------------------------- event ----------------------------------------
+enum {
+    eEvent_Key = 0
+};
+
+typedef struct {
+    AgEvent event;
+    enum {
+        eKey_None,
+        eKey_Up,
+        eKey_Down,
+        eKey_Left,
+        eKey_Right,
+        eKey_Enter
+    } key;
+} KeyEvent;
+
 static AgObj root;
     static AgObj buttons;
         static AgButton btn1;
@@ -48,27 +65,30 @@ static void Root_Layout(AgObj* obj) {
 }
 
 static void Hightlight_Draw(AgObj* obj, AgPainter* painter) {
-    RectDraw draw = {
+    AgRectDraw draw = {
         .color = AG_COLOR_GRAY
     };
-    RectDraw_Init(&draw, painter);
+    AgRectDraw_Init(&draw, painter);
+    // AgInvertDraw draw;
+    // AgInvertDraw_Init(&draw, painter);
     AgObj_GetLocalBound(obj, &draw.rect);
     painter->call_draw(painter, &draw.draw);
 }
 
-// ---------------------------------------- filters ----------------------------------------
+// ---------------------------------------- logics ----------------------------------------
+/* buttons页面 */
+static ag_bool Buttons_Filter(AgObj* obj);
+static void Buttons_ObjSelected(AgObj* obj);
+static void Buttons_Event(AgKeySwitcher* ks, AgEvent* event);
+
+/* page页面 */
+static ag_bool Page_Filter(AgObj* obj);
+static void Page_ObjSelected(AgObj* obj);
+static void Page_Event(AgKeySwitcher* ks, AgEvent* event);
+
+// ---------------------------------------- private ----------------------------------------
 static ag_bool Buttons_Filter(AgObj* obj) {
     return true;
-}
-
-static ag_bool Buttons_ActionFilter(AgObj* curr, AgKeySwitActionEnum action) {
-    switch (action) {
-    case eAgKeyAction_GoNext:
-    case eAgKeyAction_GoPrev:
-        return ag_true;
-    default:
-        return ag_false;
-    }
 }
 
 static void Buttons_ObjSelected(AgObj* obj) {
@@ -83,6 +103,91 @@ static void Buttons_ObjSelected(AgObj* obj) {
     }
     else if (obj == &btn4.obj) {
         AgStackLayout_Push2(&sl, &obj4);
+    }
+}
+
+static void Buttons_Event(AgKeySwitcher* ks, AgEvent* event) {
+    if (event->type == eEvent_Key) {
+        event->handled = ag_true;
+        
+        KeyEvent* e = AGUI_CONTAINER_OF(KeyEvent, event, event);
+        switch (e->key) {
+        case eKey_Up:
+            AgKeySwitcher_GoPrev(&switcher);
+            break;
+        case eKey_Down:
+            AgKeySwitcher_GoNext(&switcher);
+            break;
+        case eKey_Right:
+            /* 选择器到栈布局器的当前页面 */
+            {
+                AgObj* page = AgStackLayout_Current(&sl);
+                if (NULL != page) {
+                    AgObj* btn = AGUI_CONTAINER_OF(AgObj, node, page->childern.tail);
+                    if (NULL != btn) {
+                        /* 切换函数指针 */
+                        ks->obj_selected = Page_ObjSelected;
+                        ks->filter = Page_Filter;
+                        ks->event = Page_Event;
+                        /* 切换部件 */
+                        AgKeySwitcher_Goto(&switcher, btn);
+                    }
+                }
+            }
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+static ag_bool Page_Filter(AgObj* obj) {
+    if (eAgObjType_TextView == obj->obj_type) {
+        return ag_false;
+    }
+    return ag_true;
+}
+static void Page_ObjSelected(AgObj* obj) {
+
+}
+static void Page_Event(AgKeySwitcher* ks, AgEvent* event) {
+    if (event->type == eEvent_Key) {
+        event->handled = ag_true;
+        KeyEvent* e = AGUI_CONTAINER_OF(KeyEvent, event, event);
+        switch (e->key) {
+        case eKey_Left:
+        {
+            /* 切换到按钮 */
+            ks->event = Buttons_Event;
+            ks->filter = Buttons_Filter;
+            ks->obj_selected = Buttons_ObjSelected;
+            AgKeySwitcher_Goto(&switcher, Agobj_FirstChild(&buttons));
+        }
+            break;
+        case eKey_Enter:
+        {
+            AgObj* btn = switcher.current;
+            if (&btn11.obj == btn) {
+                AgStackLayout_Push2(&sl, &obj2);
+                AgKeySwitcher_Goto(&switcher, AgObj_LastChild(&obj2));
+            }
+            else if (&btn21.obj == btn) {
+                AgStackLayout_Push2(&sl, &obj3);
+                AgKeySwitcher_Goto(&switcher, AgObj_LastChild(&obj3));
+            }
+            else if (&btn31.obj == btn) {
+                AgStackLayout_Push2(&sl, &obj4);
+                AgKeySwitcher_Goto(&switcher, AgObj_LastChild(&obj4));
+            }
+            else if (&btn41.obj == btn) {
+                AgStackLayout_Push2(&sl, &obj1);
+                AgKeySwitcher_Goto(&switcher, AgObj_LastChild(&obj1));
+            }
+        }
+            break;
+        default:
+            break;
+        }
     }
 }
 
@@ -146,18 +251,18 @@ static void Root_Init() {
     AgObj_Init(&highlighter);
     highlighter.vfunc.draw = Hightlight_Draw;
     AgKeySwitcher_Init(&switcher, &root, &highlighter);
-    switcher.action_filter = Buttons_ActionFilter;
     switcher.filter = Buttons_Filter;
     switcher.obj_selected = Buttons_ObjSelected;
-    AgKeySwitcher_SetCurrent(&switcher, &btn1.obj);
+    switcher.event = Buttons_Event;
+    AgKeySwitcher_Goto(&switcher, &btn1.obj);
 }
 
 // ---------------------------------------- clear ----------------------------------------
 static void ClearDraw(AgObj* obj, AgPainter* painter) {
-    FillDraw fill = {
+    AgFillDraw fill = {
         .color = AG_COLOR_BLACK,
     };
-    FillDraw_Init(&fill, painter);
+    AgFillDraw_Init(&fill, painter);
     AgObj_GetLocalBound(obj, &fill.rect);
     painter->call_draw(painter, &fill.draw);
 }
@@ -183,35 +288,51 @@ int main(int argc, char** argv) {
     root.vfunc.draw = ClearDraw;
 
     while (!WindowShouldClose()) {
+        /* event */
+        KeyEvent e = {
+            .key = eKey_None,
+            .event = {
+                .handled = ag_false,
+                .sender = NULL,
+                .type = eEvent_Key
+            }
+        };
         if (IsKeyPressed(KEY_RIGHT)) {
-            AgKeySwitcher_GoNext(&switcher);
+            e.key = eKey_Right;
         }
         if (IsKeyPressed(KEY_LEFT)) {
-            AgKeySwitcher_GoPrev(&switcher);
+            e.key = eKey_Left;
         }
         if (IsKeyPressed(KEY_UP)) {
-            AgKeySwitcher_GoUp(&switcher);
+            e.key = eKey_Up;
         }
         if (IsKeyPressed(KEY_DOWN)) {
-            AgKeySwitcher_GoDown(&switcher);
+            e.key = eKey_Down;
         }
         if (IsKeyPressed(KEY_ENTER)) {
-            AgObj* obj = switcher.current;
-            AgEvent e = {
-                .handled = ag_false,
-                .type = KEY_ENTER,
-                .sender = obj,
-            };
-            if (NULL != obj) {
-                AgObj_SendEvent(obj, &e);
-            }
+            e.key = eKey_Enter;
         }
-        
+        if (e.key != eKey_None) {
+            AgKeySwitcher_SendEvent(&switcher, &e.event);
+        }
 
-        AgObj_Redraw(&root);
+        /* draw */
         if (root.flags.invalid) {
             AgObj_DrawObj(&root, &impl.painter);
         }
+
+        /* draw buffer */
+        Rectangle inv_rec = {
+            .x = 0,
+            .y = 0,
+            .width = rect.w,
+            .height = -rect.h
+        };
+        Vector2 pos = {.x = 0, .y = 0};
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawTextureRec(impl.texture.texture, inv_rec, pos, WHITE);
+        EndDrawing();
     }
 
     CloseWindow();

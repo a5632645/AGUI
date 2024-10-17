@@ -11,13 +11,13 @@ static void _InitVFunc(AgObjVFunc* vfun) {
 // ---------------------------------------- impl ----------------------------------------
 static void TextView_Draw(AgObj* obj, AgPainter* painter) {
     AgTextView* tv = AGUI_CONTAINER_OF(AgTextView, obj, obj);
-    TextDraw draw = {
+    AgTextDraw draw = {
         .align = tv->align,
         .color = tv->color,
         .font_size = tv->font_size,
         .text = tv->text
     };
-    TextDraw_Init(&draw, painter);
+    AgTextDraw_Init(&draw, painter);
     AgObj_GetLocalBound(&tv->obj, &draw.rect);
     painter->call_draw(painter, &draw.draw);
 

@@ -44,6 +44,7 @@ void AgStackLayout_Push(AgStackLayout* sl, AgObj* obj) {
     if (NULL != old) {
         AgList_PushBack(&sl->stack, &old->node);
     }
+    AgObj_Redraw(&sl->obj);
 }
 
 void AgStackLayout_Push2(AgStackLayout* sl, AgObj* obj) {

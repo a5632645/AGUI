@@ -12,30 +12,30 @@ static void _Draw(AgObj* obj, AgPainter* painter) {
     }
 
     /* 背景 */
-    FillDraw fill = {
+    AgFillDraw fill = {
         .color = AG_COLOR_GRAY,
     };
-    FillDraw_Init(&fill, painter);
+    AgFillDraw_Init(&fill, painter);
     AgObj_GetLocalBound(obj, &fill.rect);
     painter->call_draw(painter, &fill.draw);
     const AgRect* local_bound = &fill.rect;
 
     /* 边框 */
-    RectDraw rect = {
+    AgRectDraw rect = {
         .color = top_left
     };
-    RectDraw_Init(&rect, painter);
+    AgRectDraw_Init(&rect, painter);
     AgObj_GetLocalBound(obj, &rect.rect);
     painter->call_draw(painter, &rect.draw);
 
-    LineDraw line = {
+    AgLineDraw line = {
         .x1 = local_bound->x + local_bound->w ,
         .y1 = local_bound->y,
         .x2 = local_bound->x + local_bound->w,
         .y2 = local_bound->y + local_bound->h,
         .color = bottom_right
     };
-    LineDraw_Init(&line, painter);
+    AgLineDraw_Init(&line, painter);
     painter->call_draw(painter, &line.draw);
 
     line.x1 = local_bound->x;
@@ -43,22 +43,21 @@ static void _Draw(AgObj* obj, AgPainter* painter) {
     painter->call_draw(painter, &line.draw);
 
     /* 文字 */
-    TextDraw text = {
+    AgTextDraw text = {
         .color = btn->color,
         .align = eAgAlign_Center,
         .font_size = btn->font_size,
         .text = btn->text,
     };
-    TextDraw_Init(&text, painter);
+    AgTextDraw_Init(&text, painter);
     AgObj_GetLocalBound(obj, &text.rect);
     painter->call_draw(painter, &text.draw);
-
-    AgDbg_DrawFrame(obj, painter);
 }
 
 // ---------------------------------------- public ----------------------------------------
 void AgButton_Init(AgButton* obj) {
     AgObj_Init(&obj->obj);
+    obj->obj.flags.transpant = ag_false;
     obj->obj.obj_type = eAgObjType_Button;
     obj->obj.vfunc.draw = _Draw;
     obj->press = ag_false;

@@ -15,16 +15,16 @@ typedef enum {
     eAgKeyAction_GoRoot,
 } AgKeySwitActionEnum;
 
-typedef struct {
+typedef struct __AgKeySwitcher {
     AgObj* root;
     AgObj* current;
     AgObj* highlight;
     /* 是否选择该obj, 返回值为ag_true表示该obj能被选中 */
     ag_bool(*filter)(AgObj* obj);
-    /* 是否能发生该action, 返回值为ag_true表示该action能被触发 */
-    ag_bool(*action_filter)(AgObj* curr, AgKeySwitActionEnum action);
     /* obj被选中时的回调 */
     void(*obj_selected)(AgObj* obj);
+    /* 事件调度 */
+    void(*event)(struct __AgKeySwitcher* ks, AgEvent* event);
 } AgKeySwitcher;
 
 /**
@@ -38,9 +38,9 @@ void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight);
 /**
  * @brief 设置当前物体
  * @param ks 
- * @param obj 
+ * @param obj 不能为NULL
  */
-void AgKeySwitcher_SetCurrent(AgKeySwitcher* ks, AgObj* obj);
+void AgKeySwitcher_Goto(AgKeySwitcher* ks, AgObj* obj);
 
 /**
  * @brief 深入到当前节点的下一层
@@ -71,3 +71,10 @@ void AgKeySwitcher_GoPrev(AgKeySwitcher* ks);
  * @param ks 
  */
 void AgKeySwitcher_GoRoot(AgKeySwitcher* ks);
+
+/**
+ * @brief 发送事件，如果switcher未处理，将转发到current obj(sender会被改写)
+ * @param ks 
+ * @param event 不能为NULL
+ */
+void AgKeySwitcher_SendEvent(AgKeySwitcher* ks, AgEvent* event);

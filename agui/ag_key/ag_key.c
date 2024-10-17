@@ -4,10 +4,10 @@
 static void _AddToSameLayer(AgObj* obj, AgObj* highlight) {
     AgObj_LeaveParent(highlight);
     if (NULL == obj->parent) {
-        AgObj_AddChildAtBack(obj, highlight);
+        AgObj_AddChild(obj, highlight);
     }
     else {
-        AgObj_AddChildAtBack(obj->parent, highlight);
+        AgObj_AddChild(obj->parent, highlight);
     }
     AgObj_SetBound(highlight, &obj->bound);
 }
@@ -17,11 +17,9 @@ static ag_bool _Filter(AgObj* obj) {
     return ag_true;
 }
 
-static ag_bool _ActionFilter(AgObj* obj, AgKeySwitActionEnum action) {
-    return ag_true;
-}
-
 static void _ObjSelected(AgObj* obj) {}
+
+static void _Event(AgKeySwitcher* ks, AgEvent* event) {}
 
 // ---------------------------------------- public ----------------------------------------
 /**
@@ -33,12 +31,12 @@ void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight) {
     ks->root = root;
     ks->current = ks->root;
     ks->highlight = highlight;
-    AgObj_AddChildAtBack(ks->root, ks->highlight);
+    AgObj_AddChild(ks->root, ks->highlight);
     AgObj_SetBound(ks->highlight, &ks->current->bound);
 
     ks->filter = _Filter;
-    ks->action_filter = _ActionFilter;
     ks->obj_selected = _ObjSelected;
+    ks->event = _Event;
 }
 
 /**
@@ -46,7 +44,7 @@ void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight) {
  * @param ks 
  * @param obj 
  */
-void AgKeySwitcher_SetCurrent(AgKeySwitcher* ks, AgObj* obj) {
+void AgKeySwitcher_Goto(AgKeySwitcher* ks, AgObj* obj) {
     ks->current = obj;
     _AddToSameLayer(obj, ks->highlight);
     ks->obj_selected(obj);
@@ -57,9 +55,6 @@ void AgKeySwitcher_SetCurrent(AgKeySwitcher* ks, AgObj* obj) {
  * @param ks 
  */
 void AgKeySwitcher_GoDown(AgKeySwitcher* ks) {
-    if (ag_false == ks->action_filter(ks->current, eAgKeyAction_GoDown)) {
-        return;
-    }
     if (NULL == ks->current) {
         return;
     }
@@ -90,9 +85,6 @@ void AgKeySwitcher_GoDown(AgKeySwitcher* ks) {
  * @param ks 
  */
 void AgKeySwitcher_GoUp(AgKeySwitcher* ks) {
-    if (ag_false == ks->action_filter(ks->current, eAgKeyAction_GoUp)) {
-        return;
-    }
     if (NULL == ks->current) {
         return;
     }
@@ -109,9 +101,6 @@ void AgKeySwitcher_GoUp(AgKeySwitcher* ks) {
  * @param ks 
  */
 void AgKeySwitcher_GoNext(AgKeySwitcher* ks) {
-    if (ag_false == ks->action_filter(ks->current, eAgKeyAction_GoNext)) {
-        return;
-    }
     do {
         if (NULL == ks->current->node.next) {
             if (NULL != ks->current->parent) {
@@ -124,7 +113,7 @@ void AgKeySwitcher_GoNext(AgKeySwitcher* ks) {
     } while (ks->current == ks->highlight 
             || (NULL != ks->current && ks->current->flags.visiable == ag_false)
             || ks->filter(ks->current) == ag_false);
-    _AddToSameLayer(ks->current, ks->highlight);
+    AgObj_SetBound(ks->highlight, &ks->current->bound);
     ks->obj_selected(ks->current);
 }
 
@@ -133,9 +122,6 @@ void AgKeySwitcher_GoNext(AgKeySwitcher* ks) {
  * @param ks 
  */
 void AgKeySwitcher_GoPrev(AgKeySwitcher* ks) {
-    if (ag_false == ks->action_filter(ks->current, eAgKeyAction_GoPrev)) {
-        return;
-    }
     do {
         if (NULL == ks->current->node.prev) {
             if (NULL != ks->current->parent) {
@@ -148,7 +134,7 @@ void AgKeySwitcher_GoPrev(AgKeySwitcher* ks) {
     } while (ks->current == ks->highlight
             || (NULL != ks->current && ks->current->flags.visiable == ag_false)
             || ks->filter(ks->current) == ag_false);
-    _AddToSameLayer(ks->current, ks->highlight);
+    AgObj_SetBound(ks->highlight, &ks->current->bound);
     ks->obj_selected(ks->current);
 }
 
@@ -157,10 +143,17 @@ void AgKeySwitcher_GoPrev(AgKeySwitcher* ks) {
  * @param ks 
  */
 void AgKeySwitcher_GoRoot(AgKeySwitcher* ks) {
-    if (ag_false == ks->action_filter(ks->current, eAgKeyAction_GoRoot)) {
-        return;
-    }
     ks->current = ks->root;
     _AddToSameLayer(ks->current, ks->highlight);
     ks->obj_selected(ks->current);
+}
+
+void AgKeySwitcher_SendEvent(AgKeySwitcher* ks, AgEvent* event) {
+    ks->event(ks, event);
+    if (ag_false == event->handled) {
+        if (NULL != ks->current) {
+            event->sender = ks->current;
+            AgObj_SendEvent(ks->current, event);
+        }
+    }
 }

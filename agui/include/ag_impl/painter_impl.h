@@ -9,6 +9,7 @@
 
 typedef struct {
     AgPainter painter;
+    RenderTexture2D texture;
 } PainterImpl;
 
 void PainterImpl_Init(PainterImpl* impl);

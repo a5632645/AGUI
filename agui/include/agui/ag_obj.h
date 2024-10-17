@@ -53,6 +53,35 @@ typedef struct __AgObj {
     AgRect bound;
 } AgObj;
 
+// ---------------------------------------- 索引操作 ----------------------------------------
+/**
+ * @brief 该节点的第一个子节点
+ * @param obj 可以为NULL
+ * @return 可能为NULL
+ */
+AgObj* Agobj_FirstChild(AgObj* obj);
+
+/**
+ * @brief 该节点的下一个同层级节点
+ * @param obj 可以为NULL
+ * @return 可能为NULL
+ */
+AgObj* AgObj_NextSibling(AgObj* obj);
+
+/**
+ * @brief 该节点的上一个同层级节点
+ * @param obj 可以为NULL
+ * @return 可能为NULL
+ */
+AgObj* AgObj_PrevSibling(AgObj* obj);
+
+/**
+ * @brief 该节点的最后一个子节点
+ * @param obj 可以为NULL
+ * @return 可能为NULL
+ */
+AgObj* AgObj_LastChild(AgObj* obj);
+
 // ---------------------------------------- 基础操作 ----------------------------------------
 /**
  * @brief 初始化节点
@@ -209,8 +238,8 @@ void AgObj_SendToBack(AgObj* obj);
 void AgObj_CalcBound(AgObj* obj);
 
 /**
- * @brief 发送事件
- * @param obj 
- * @param event 
+ * @brief 发送事件，如果不处理将发送到父节点
+ * @param obj 可为NULL
+ * @param event 不能为NULL
  */
 void AgObj_SendEvent(AgObj* obj, AgEvent* event);
