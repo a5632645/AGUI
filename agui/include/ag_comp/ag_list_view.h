@@ -17,9 +17,9 @@ typedef struct {
     /* data */
     struct __AgListModel* model; /* model */
     AgList frees;                /* 节点池 */
-    ag_uint32 begin_idx;         /* 最顶部的obj的idx */
-    ag_uint32 display_count;     /* 显示的数量 */
-    AgObj* select_obj;           /* 选中的obj */
+    ag_int32 begin_idx;         /* 最顶部的obj的idx */
+    ag_int32 display_count;     /* 显示的数量 */
+    AgObj* select_obj;          /* 选中的obj */
 } AgListView;
 
 /**
@@ -29,6 +29,12 @@ typedef struct {
  * @param model 可以为NULL
  */
 void AgListView_Init(AgListView* lv, AgObj* parent, struct __AgListModel* model);
+
+/**
+ * @brief 摧毁一个listview
+ * @param lv 不能为NULL
+ */
+void AgListView_Destroy(AgListView* lv);
 
 /**
  * @brief 设置model
@@ -42,7 +48,7 @@ void AgListView_SetModel(AgListView* lv, struct __AgListModel* model);
  * @param lv 不能为NULL
  * @param idx 任意数
  */
-void AgListView_ItemChange(AgListView* lv, ag_uint32 idx);
+void AgListView_ItemChange(AgListView* lv, ag_int32 idx);
 
 /**
  * @brief 刷新整个list，将触发绘制
@@ -55,7 +61,7 @@ void AgListView_Update(AgListView* lv);
  * @param lv 不能为NULL
  * @param idx 任意数，无效会被clamp到0~model.count
  */
-void AgListView_SetBeginIdx(AgListView* lv, ag_uint32 idx);
+void AgListView_SetBeginIdx(AgListView* lv, ag_int32 idx);
 
 /**
  * @brief 往上或者往下移动
@@ -68,7 +74,7 @@ void AgListView_Scroll(AgListView* lv, ag_int32 shift);
 
 typedef struct __AgListModel {
     /* 有多少 */
-    ag_uint32(*count)();
+    ag_int32(*count)();
     /* 有多高 */
     ag_int16(*height)(ag_uint32 idx);
     /* 怎么绘制 */

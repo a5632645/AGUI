@@ -20,6 +20,7 @@ static AgObj* GetOneObj(AgListView* lv) {
     if (NULL == node) {
         AgObj* obj = AgImpl_MemAlloc(sizeof(AgObj));
         AgObj_Init(obj);
+        obj->vfunc.draw = _Obj_Draw;
         return obj;
     }
     else {
@@ -40,37 +41,39 @@ static void FreeAllDsiplayObj(AgListView* lv) {
  * @param is_down ag_true向下计算,ag_false向上计算
  * @return 
  */
-static ag_uint32 GetHowManyItems(AgListView* lv, ag_uint32 idx, ag_bool is_down) {
+static ag_int32 GetHowManyItems(AgListView* lv, ag_int32 idx, ag_bool is_down) {
     ag_int16 y = 0;
     ag_int16 h = lv->obj.bound.h;
-    ag_uint32 count = 0;
-    ag_uint32 num_items = lv->model->count();
+    ag_int32 count = 0;
+    ag_int32 num_items = lv->model->count();
     
     if (ag_true == is_down) {
         for (;;) {
-            y += lv->model->height(idx++);
-            if (y > h || idx >= num_items) {
+            if (idx >= num_items) {
                 return count;
             }
-            else {
-                ++count;
+            y += lv->model->height(idx++);
+            if (y > h) {
+                return count;
             }
+            ++count;
         }
     }
     else {
         for (;;) {
-            y += lv->model->height(idx--);
-            if (y > h || idx < 0) {
+            if (idx < 0) {
                 return count;
             }
-            else {
-                ++count;
+            y += lv->model->height(idx--);
+            if (y > h) {
+                return count;
             }
+            ++count;
         }
     }
 }
 
-static void SetEndIdx(AgListView* lv, ag_uint32 idx) {
+static void SetEndIdx(AgListView* lv, ag_int32 idx) {
     if (NULL == lv->model) {
         return;
     }
@@ -89,8 +92,7 @@ static void SetEndIdx(AgListView* lv, ag_uint32 idx) {
     for (uint32_t i = 0; i < items; ++i) {
         AgObj* obj = GetOneObj(lv);
         obj->id = i; /* id用作idx使用,实际idx = lv.begin_idx + obj.id */
-        obj->vfunc.draw = _Obj_Draw;
-        
+
         ag_int16 h = lv->model->height(lv->begin_idx + i);
         AgObj_SetBounds(obj, 0, y, w, h);
         y += h;
@@ -102,20 +104,15 @@ static void SetEndIdx(AgListView* lv, ag_uint32 idx) {
     AgObj_Redraw(&lv->obj);
 }
 
-static void ScrollUp(AgListView* lv, ag_uint32 shift) {
+static void ScrollUp(AgListView* lv, ag_int32 shift) {
     if (shift > lv->select_obj->id) { /* 离开了当前范围 */
         /* 直接重定向 */
-        if (lv->begin_idx < shift) {
-            AgListView_SetBeginIdx(lv, 0);
-        }
-        else {
-            AgListView_SetBeginIdx(lv, lv->begin_idx - shift);
-        }
+        AgListView_SetBeginIdx(lv, lv->begin_idx - shift);
     }
     else {
         AgObj_Redraw(lv->select_obj);
         /* 移动select到shifted */
-        for (ag_uint32 i = 0; i < shift; ++i) {
+        for (ag_int32 i = 0; i < shift; ++i) {
             lv->select_obj = AgObj_PrevSibling(lv->select_obj);
         }
         AgObj_Redraw(lv->select_obj);
@@ -123,19 +120,27 @@ static void ScrollUp(AgListView* lv, ag_uint32 shift) {
 }
 
 static void ScrollDown(AgListView* lv, ag_int32 shift) {
-    ag_uint32 shifed = lv->select_obj->id + shift;
+    ag_int32 shifed = lv->select_obj->id + shift;
     if (shifed >= lv->display_count) {
         /* 将最后一个重定向到lv.begin_idx+shift */
-        SetEndIdx(lv, lv->begin_idx + shift);
+        SetEndIdx(lv, shifed + lv->begin_idx);
     }
     else {
         AgObj_Redraw(lv->select_obj);
         /* 移动select到shifted */
-        for (ag_uint32 i = 0; i < shift; ++i) {
+        for (ag_int32 i = 0; i < shift; ++i) {
             lv->select_obj = AgObj_NextSibling(lv->select_obj);
         }
         AgObj_Redraw(lv->select_obj);
     }
+}
+
+static void NullModelUpdate(AgListView* lv) {
+    FreeAllDsiplayObj(lv);
+    lv->begin_idx = 0;
+    lv->display_count = 0;
+    lv->select_obj = NULL;
+    AgObj_Redraw(&lv->obj);
 }
 
 // ---------------------------------------- public ----------------------------------------
@@ -152,67 +157,85 @@ void AgListView_Init(AgListView* lv, AgObj* parent, struct __AgListModel* model)
     AgListView_SetModel(lv, model);
 }
 
-void AgListView_SetModel(AgListView* lv, struct __AgListModel* model) {
-    lv->model = model;
-    AgListView_SetBeginIdx(lv, 0);
+void AgListView_Destroy(AgListView* lv) {
+    FreeAllDsiplayObj(lv);
+    AgListNode* node = lv->frees.head;
+    while (NULL != node) {
+        AgListNode* next = node->next;
+        AgImpl_MemFree(node);
+        node = next;
+    }
 }
 
-void AgListView_ItemChange(AgListView* lv, ag_uint32 idx) {
-    ag_uint32 obj_idx = idx - lv->begin_idx;
+void AgListView_SetModel(AgListView* lv, struct __AgListModel* model) {
+    lv->model = model;
+    if (NULL == model) {
+        NullModelUpdate(lv);
+    }
+    else {
+        AgListView_SetBeginIdx(lv, 0);
+    }
+}
+
+void AgListView_ItemChange(AgListView* lv, ag_int32 idx) {
+    ag_int32 obj_idx = idx - lv->begin_idx;
     if (obj_idx < 0 || obj_idx >= lv->display_count) {
         return;
     }
 
     /* 重新绘制对应的obj */
     AgObj* obj = Agobj_FirstChild(&lv->obj);
-    for (uint32_t i = 0; i < lv->display_count; ++i) {
+    for (uint32_t i = 0; i < obj_idx; ++i) {
         obj = AgObj_NextSibling(obj);
     }
     AgObj_Redraw(obj);
 }
 
 void AgListView_Update(AgListView* lv) {
-    /* 将超出范围的obj移动到lv.frees里去 */
-    ag_uint32 num_items = lv->model->count();
-    ag_uint32 can_display = num_items - lv->begin_idx;
-    if (can_display < lv->display_count) {
-        for (ag_uint32 i = lv->display_count - 1; i >= can_display; --i) {
-            AgListNode* node = AgList_Popback(&lv->obj.childern);
-            AgList_PushBack(&lv->frees, node);
-        }
-        lv->display_count = can_display;
+    if (NULL == lv->model) {
+        NullModelUpdate(lv);
+        return;
     }
 
-    /* 检查已经被选择的obj是否还存在 */
-    if (lv->select_obj->id >= lv->display_count) {
-        lv->select_obj = AgObj_LastChild(&lv->obj);
+    ag_int32 num_items = lv->model->count();
+    if (num_items == 0) {
+        NullModelUpdate(lv);
+        return;
+    }
+
+    ag_int32 can_display = num_items - lv->begin_idx;
+    if (can_display < lv->display_count) { /* 缩小了 */
+        SetEndIdx(lv, lv->begin_idx + can_display);
+    }
+    else if (can_display > lv->display_count) { /* 扩大了 */
+        AgListView_SetBeginIdx(lv, lv->begin_idx);
     }
 
     /* 更新obj */
     AgObj_Redraw(&lv->obj);
 }
 
-void AgListView_SetBeginIdx(AgListView* lv, ag_uint32 idx) {
+void AgListView_SetBeginIdx(AgListView* lv, ag_int32 idx) {
     if (NULL == lv->model) {
         return;
     }
 
     /* clamp idx */
     idx = AGUI_MIN(lv->model->count() - 1, idx);
+    idx = AGUI_MAX(0, idx);
     lv->begin_idx = idx;
 
     /* how many items */
-    ag_uint32 items = GetHowManyItems(lv, idx, ag_true);
+    ag_int32 items = GetHowManyItems(lv, idx, ag_true);
     lv->display_count = items;
 
     /* layout */
     FreeAllDsiplayObj(lv);
     ag_int16 w = lv->obj.bound.w;
     ag_int16 y = 0;
-    for (uint32_t i = 0; i < items; ++i) {
+    for (ag_int32 i = 0; i < items; ++i) {
         AgObj* obj = GetOneObj(lv);
         obj->id = i; /* id用作idx使用,实际idx = lv.begin_idx + obj.id */
-        obj->vfunc.draw = _Obj_Draw;
         
         ag_int16 h = lv->model->height(lv->begin_idx + i);
         AgObj_SetBounds(obj, 0, y, w, h);
@@ -229,7 +252,7 @@ void AgListView_Scroll(AgListView* lv, ag_int32 shift) {
     if (0 == shift) {
         return;
     }
-    if (NULL == lv->model) {
+    if (NULL == lv->model || NULL == lv->select_obj) {
         return;
     }
     if (shift < 0) {
