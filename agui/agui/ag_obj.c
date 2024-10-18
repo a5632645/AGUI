@@ -316,7 +316,7 @@ void AgObj_SetSize(AgObj* obj, ag_int16 w, ag_int16 h) {
     AgObj_SetBound(obj, &rect);
 }
 
-void AgObj_GetLocalBound(AgObj* obj, AgRect* bound) {
+void AgObj_GetLocalBound(const AgObj* obj, AgRect* bound) {
     bound->x = 0;
     bound->y = 0;
     bound->w = obj->bound.w;

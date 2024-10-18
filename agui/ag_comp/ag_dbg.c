@@ -32,7 +32,7 @@ static AgColor Hue2Rgb(uint8_t hue, uint8_t brightness) {
 
 static AgColor AgDbg_RandomColor() {
     static uint8_t last_hue = 0;
-    last_hue += 30;
+    last_hue += 60;
     last_hue %= 360;
     return Hue2Rgb(last_hue, 255);
 }

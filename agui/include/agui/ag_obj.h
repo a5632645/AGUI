@@ -228,7 +228,7 @@ void AgObj_SetSize(AgObj* obj, ag_int16 w, ag_int16 h);
  * @param obj 
  * @param bound 
  */
-void AgObj_GetLocalBound(AgObj* obj, AgRect* bound);
+void AgObj_GetLocalBound(const AgObj* obj, AgRect* bound);
 
 // ---------------------------------------- z操作 ----------------------------------------
 /**
