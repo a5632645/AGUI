@@ -3,6 +3,6 @@
 #include "agui/ag_obj.h"
 #include "agui/ag_painter.h"
 
-#define AGUI_DBG_WRIE_FRAME 0
+#define AGUI_DBG_WRIE_FRAME 1
 
 void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter);

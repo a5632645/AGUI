@@ -18,7 +18,6 @@ typedef enum {
 typedef struct __AgKeySwitcher {
     AgObj* root;
     AgObj* current;
-    AgObj* highlight;
     /* 是否选择该obj, 返回值为ag_true表示该obj能被选中 */
     ag_bool(*filter)(AgObj* obj);
     /* obj被选中时的回调 */
@@ -33,7 +32,7 @@ typedef struct __AgKeySwitcher {
  * @param root 
  * @param highlight 高亮组件
  */
-void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight);
+void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root);
 
 /**
  * @brief 设置当前物体

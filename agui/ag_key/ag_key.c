@@ -27,13 +27,9 @@ static void _Event(AgKeySwitcher* ks, AgEvent* event) {}
  * @param ks 
  * @param root 
  */
-void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight) {
+void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root) {
     ks->root = root;
     ks->current = ks->root;
-    ks->highlight = highlight;
-    AgObj_AddChild(ks->root, ks->highlight);
-    AgObj_SetBound(ks->highlight, &ks->current->bound);
-
     ks->filter = _Filter;
     ks->obj_selected = _ObjSelected;
     ks->event = _Event;
@@ -45,9 +41,7 @@ void AgKeySwitcher_Init(AgKeySwitcher* ks, AgObj* root, AgObj* highlight) {
  * @param obj 
  */
 void AgKeySwitcher_Goto(AgKeySwitcher* ks, AgObj* obj) {
-    AgObj_Redraw(ks->highlight->parent);
     ks->current = obj;
-    _AddToSameLayer(obj, ks->highlight);
     ks->obj_selected(obj);
 }
 
@@ -65,7 +59,6 @@ void AgKeySwitcher_GoDown(AgKeySwitcher* ks) {
     AgListNode* node = ks->current->childern.head;
     AgObj* obj = AGUI_CONTAINER_OF(AgObj, node, node);
     while (NULL != node
-        && obj == ks->highlight
         && ag_true == obj->flags.visiable
         && ag_true == ks->filter(obj)) {
         node = node->next;
@@ -73,7 +66,6 @@ void AgKeySwitcher_GoDown(AgKeySwitcher* ks) {
     }
     if (NULL != node) {
         ks->current = obj;
-        _AddToSameLayer(ks->current, ks->highlight);
     }
     else {
         AgKeySwitcher_GoRoot(ks);
@@ -93,7 +85,6 @@ void AgKeySwitcher_GoUp(AgKeySwitcher* ks) {
         return;
     }
     ks->current = ks->current->parent;
-    _AddToSameLayer(ks->current, ks->highlight);
     ks->obj_selected(ks->current);
 }
 
@@ -111,10 +102,8 @@ void AgKeySwitcher_GoNext(AgKeySwitcher* ks) {
         else {
             ks->current = AGUI_CONTAINER_OF(AgObj, node, ks->current->node.next);
         }
-    } while (ks->current == ks->highlight 
-            || (NULL != ks->current && ks->current->flags.visiable == ag_false)
+    } while ((NULL != ks->current && ks->current->flags.visiable == ag_false)
             || ks->filter(ks->current) == ag_false);
-    AgObj_SetBound(ks->highlight, &ks->current->bound);
     ks->obj_selected(ks->current);
 }
 
@@ -132,10 +121,8 @@ void AgKeySwitcher_GoPrev(AgKeySwitcher* ks) {
         else {
             ks->current = AGUI_CONTAINER_OF(AgObj, node, ks->current->node.prev);
         }
-    } while (ks->current == ks->highlight
-            || (NULL != ks->current && ks->current->flags.visiable == ag_false)
+    } while ((NULL != ks->current && ks->current->flags.visiable == ag_false)
             || ks->filter(ks->current) == ag_false);
-    AgObj_SetBound(ks->highlight, &ks->current->bound);
     ks->obj_selected(ks->current);
 }
 
@@ -145,7 +132,6 @@ void AgKeySwitcher_GoPrev(AgKeySwitcher* ks) {
  */
 void AgKeySwitcher_GoRoot(AgKeySwitcher* ks) {
     ks->current = ks->root;
-    _AddToSameLayer(ks->current, ks->highlight);
     ks->obj_selected(ks->current);
 }
 
