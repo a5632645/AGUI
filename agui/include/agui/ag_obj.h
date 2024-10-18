@@ -85,7 +85,14 @@ AgObj* AgObj_LastChild(AgObj* obj);
 // ---------------------------------------- 基础操作 ----------------------------------------
 /**
  * @brief 初始化节点
- * @param obj 
+ * @param obj 不能为NULL
+ * @param parent 可以为NULL
+ */
+void AgObj_Init2(AgObj* obj, AgObj* parent);
+
+/**
+ * @brief 初始化节点
+ * @param obj 不能为NULL
  */
 void AgObj_Init(AgObj* obj);
 
@@ -131,11 +138,18 @@ void AgObj_RemoveAllChild(AgObj* obj);
 void AgObj_LeaveParent(AgObj* obj);
 
 /**
- * @brief 绘制
- * @param obj 
- * @param painter 
+ * @brief 绘制obj，不能在obj.vfun.draw里调用
+ * @param obj 不能为NULL
+ * @param painter 不能为NULL
  */
 void AgObj_DrawObj(AgObj* obj, AgPainter* painter);
+
+/**
+ * @brief 绘制obj，只能在obj.vfun.draw里调用
+ * @param obj 可以为NULL
+ * @param painter 不能为NULL
+ */
+void AgObj_DrawObjInObj(AgObj* obj, AgPainter* painter);
 
 /**
  * @brief 测试是否被点击

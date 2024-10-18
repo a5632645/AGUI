@@ -83,7 +83,7 @@ static void _ReDraw(AgObj* obj) {
  * @param painter 
  */
 extern void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter);
-static void _DrawObj(AgObj* obj, AgPainter* painter) {
+void AgObj_DrawObjInObj(AgObj* obj, AgPainter* painter) {
     if (NULL != obj) {
         /* 保存绘制区 */
         AgPainter_SaveState(painter);
@@ -109,7 +109,7 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
                 AgListNode* node = obj->childern.head;
                 while (NULL != node) {
                     AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
-                    _DrawObj(child, painter);
+                    AgObj_DrawObjInObj(child, painter);
                     node = node->next;
                 }
             }
@@ -122,7 +122,7 @@ static void _DrawObj(AgObj* obj, AgPainter* painter) {
                     AgListNode* node = obj->childern.head;
                     while (NULL != node) {
                         AgObj* child = AGUI_CONTAINER_OF(AgObj, node, node);
-                        _DrawObj(child, painter);
+                        AgObj_DrawObjInObj(child, painter);
                         node = node->next;
                     }
                 }
@@ -163,16 +163,22 @@ AgObj* AgObj_LastChild(AgObj* obj) {
     return AGUI_CONTAINER_OF(AgObj, node, obj->childern.tail);
 }
 
-void AgObj_Init(AgObj* obj) {
+void AgObj_Init2(AgObj* obj, AgObj* parent) {
     AgListNode_Init(&obj->node);
-    obj->parent = NULL;
     AgList_Init(&obj->childern);
     _InitVFunc(obj);
     _InitFlags(obj);
     AgRect_Zero(&obj->bound);
-
     obj->obj_type = eAgObjType_Obj;
     obj->id = 0;
+    obj->parent = parent;
+    if (NULL != parent) {
+        AgObj_AddChild(parent, obj);
+    }
+}
+
+void AgObj_Init(AgObj* obj) {
+    AgObj_Init2(obj, NULL);
 }
 
 void AgObj_AddChild(AgObj* obj, AgObj* child) {
@@ -196,7 +202,7 @@ void AgObj_DrawObj(AgObj* obj, AgPainter* painter) {
     AgPainter_PrepareDraw(painter, &rt);
 
     painter->begin_frame(painter);
-    _DrawObj(obj, painter);
+    AgObj_DrawObjInObj(obj, painter);
     painter->end_frame(painter);
 }
 
