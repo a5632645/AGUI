@@ -4,8 +4,8 @@
 static void __Draw(AgObj* obj, AgPainter* painter) {
     AgListView* lv = AGUI_CONTAINER_OF(AgListView, obj, obj);
     ag_int16 final_y = 0;
-
     ag_int16 item_w = obj->bound.w;
+    
     if (NULL != lv->model) {
         ag_int16 num_items = lv->model->count();
         if (lv->display_count < num_items) {
