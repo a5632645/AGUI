@@ -7,16 +7,10 @@
 
 struct __AgObj;
 
-/**
- * @brief 虚函数表
- */
 typedef struct {
-    /* 绘制，空间坐标按实现给，超出父节点范围的节点也会被绘制 */
-    void(*draw)(struct __AgObj* obj, AgPainter* painter);
-    /* 布局，obj是父节点 */
-    void(*layout)(struct __AgObj* obj);
-    /* 事件 */
-    void(*event)(struct __AgObj* obj, const AgEvent* event);
+    void(*draw)(struct __AgObj* obj, AgPainter* painter);   /* 绘制，空间坐标按实现给，超出父节点范围的节点也会被绘制 */
+    void(*layout)(struct __AgObj* obj);                     /* 布局，obj是父节点 */
+    void(*event)(struct __AgObj* obj, const AgEvent* event);/* 事件 */
 } AgObjVFunc;
 
 enum {
@@ -27,28 +21,18 @@ enum {
  * @brief 节点，默认填充黑色
  */
 typedef struct __AgObj {
-    /* 同层级链接 */
-    AgListNode node;
-    /* 节点类型,0=AgObj */
-    ag_uint16 obj_type;
-    /* 父节点 */
-    struct __AgObj* parent;
-    /* 子节点，注意不会释放内存 */
-    AgList childern;
-    /* 虚函数 */
-    AgObjVFunc vfunc;
+    AgListNode node;        /* 同层级链接 */
+    ag_uint16 obj_type;     /* 节点类型,0=AgObj */
+    struct __AgObj* parent; /* 父节点 */
+    AgList childern;        /* 子节点，注意不会释放内存 */
+    AgObjVFunc vfunc;       /* 虚函数 */
     struct {
-        /* 需要重新绘制 */
-        ag_bool redraw : 1;
-        /* 无效，但不代表需要重新绘制 */
-        ag_bool invalid : 1;
-        /* 可见性 */
-        ag_bool visiable : 1;
-        /* 是否是半透明 */
-        ag_bool transpant : 1;
+        ag_bool redraw : 1;     /* 需要重新绘制 */
+        ag_bool invalid : 1;    /* 无效，但不代表需要重新绘制 */
+        ag_bool visiable : 1;   /* 可见性 */
+        ag_bool transpant : 1;  /* 是否是半透明 */
     } flags;
-    /* 在父节点空间的位置，全局独立计算免得递归更新 */
-    AgRect bound;
+    AgRect bound; /* 在父节点空间的位置 */
 } AgObj;
 
 // ---------------------------------------- 索引操作 ----------------------------------------
@@ -96,42 +80,42 @@ void AgObj_Init(AgObj* obj);
 
 /**
  * @brief 添加子节点，不会检查重复，不会触发绘制和布局
- * @param obj 
- * @param child 
+ * @param obj 不能为NULL
+ * @param child 不能为NULL
  */
 void AgObj_AddChild(AgObj* obj, AgObj* child);
 
 /**
  * @brief 添加子节点，不会检查重复，不会触发绘制和布局，处于最底层
- * @param obj 
- * @param child 
+ * @param obj 不能为NULL
+ * @param child 不能为NULL
  */
 void AgObj_AddChildAtBack(AgObj* obj, AgObj* child);
 
 /**
  * @brief 从某个数组中添加子节点，不会触发绘制和布局
- * @param obj 
- * @param childs 
- * @param count 
+ * @param obj 不能为NULL
+ * @param childs 不能为NULL
+ * @param count 必须匹配
  */
 void AgObj_AddChildFromArray(AgObj* obj, AgObj* childs, ag_uint32 count);
 
 /**
  * @brief 移除子节点，不会检查是否存在，不会触发绘制和布局
- * @param obj 
- * @param child 
+ * @param obj 不能为NULL
+ * @param child 不能为NULL，必须是obj的子节点
  */
 void AgObj_RemoveChild(AgObj* obj, AgObj* child);
 
 /**
  * @brief 移除所有的子节点，不会触发绘制和布局
- * @param obj 
+ * @param obj 不能为NULL
  */
 void AgObj_RemoveAllChild(AgObj* obj);
 
 /**
  * @brief 从父节点移除
- * @param obj 
+ * @param obj 不能为NULL
  */
 void AgObj_LeaveParent(AgObj* obj);
 
@@ -150,8 +134,8 @@ void AgObj_DrawObj(AgObj* obj, AgPainter* painter);
 void AgObj_DrawObjInObj(AgObj* obj, AgPainter* painter);
 
 /**
- * @brief 测试是否被点击
- * @param obj 
+ * @brief 测试是否被点击，xy是obj父节点空间的坐标
+ * @param obj 不能为NULL
  * @param x 
  * @param y 
  * @return 
@@ -160,7 +144,7 @@ ag_bool AgObj_HitTest(AgObj* obj, ag_int16 x, ag_int16 y);
 
 /**
  * @brief 找到被点击的节点
- * @param obj 
+ * @param obj 不能为NULL
  * @param x 
  * @param y 
  * @return 
@@ -170,34 +154,34 @@ AgObj* AgObj_HitObj(AgObj* obj, ag_int16 x, ag_int16 y);
 // ---------------------------------------- 状态操作 ----------------------------------------
 /**
  * @brief 设置是否可见
- * @param obj 
+ * @param obj 不能为NULL
  * @param visiable 
  */
 void AgObj_SetVisiable(AgObj* obj, ag_bool visiable);
 
 /**
  * @brief 标记该节点需要重新绘制，如果被遮挡可能发生错误的绘制
- * @param obj 
+ * @param obj 不能为NULL
  */
 void AgObj_Redraw(AgObj* obj);
 
 // ---------------------------------------- 布局操作 ----------------------------------------
 /**
  * @brief 触发布局
- * @param obj 
+ * @param obj 不能为NULL
  */
 void AgObj_DoLayout(AgObj* obj);
 
 /**
  * @brief 设置布局
- * @param obj 
+ * @param obj 不能为NULL
  * @param bound 
  */
 void AgObj_SetBound(AgObj* obj, const AgRect* bound);
 
 /**
  * @brief 设置布局
- * @param obj 
+ * @param obj 不能为NULL
  * @param x 
  * @param y 
  * @param w 
@@ -207,7 +191,7 @@ void AgObj_SetBounds(AgObj* obj, ag_int16 x, ag_int16 y, ag_int16 w, ag_int16 h)
 
 /**
  * @brief 设置位置
- * @param obj 
+ * @param obj 不能为NULL
  * @param x 
  * @param y 
  */
@@ -215,7 +199,7 @@ void AgObj_SetPos(AgObj* obj, ag_int16 x, ag_int16 y);
 
 /**
  * @brief 设置尺寸
- * @param obj 
+ * @param obj 不能为NULL
  * @param w 
  * @param h 
  */
@@ -223,7 +207,7 @@ void AgObj_SetSize(AgObj* obj, ag_int16 w, ag_int16 h);
 
 /**
  * @brief 获取边界在本地空间下的大小
- * @param obj 
+ * @param obj 不能为NULL
  * @param bound 
  */
 void AgObj_GetLocalBound(const AgObj* obj, AgRect* bound);
@@ -231,20 +215,20 @@ void AgObj_GetLocalBound(const AgObj* obj, AgRect* bound);
 // ---------------------------------------- z操作 ----------------------------------------
 /**
  * @brief 将节点置顶
- * @param obj 
+ * @param obj 不能为NULL
  */
 void AgObj_BringToFront(AgObj* obj);
 
 /**
  * @brief 将节点放到最底层
- * @param obj 
+ * @param obj 不能为NULL
  */
 void AgObj_SendToBack(AgObj* obj);
 
 // ---------------------------------------- 奇怪的操作 ----------------------------------------
 /**
  * @brief 计算节点的边界，大小为0会被计算
- * @param obj 
+ * @param obj 不能为NULL
  */
 void AgObj_CalcBound(AgObj* obj);
 

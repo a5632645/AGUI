@@ -5,6 +5,7 @@ struct __AgObj;
 
 typedef struct {
     ag_bool handled;
-    ag_uint16 type;
+    ag_uint8 class_;
+    ag_uint8 id;
     struct __AgObj* sender;
 } AgEvent;

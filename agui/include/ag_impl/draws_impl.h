@@ -9,19 +9,27 @@
 #include "agui/ag_color.h"
 #include "agui/ag_align.h"
 
-/* 最好不要动 */
 enum {
-    eAgDrawType_Pixel = 0,
+    eAgDrawType_Fill = 0, /* 不能改变的 */
+
+    /* 自定义的 */
+    eAgDrawType_Pixel,
     eAgDrawType_Line,
     eAgDrawType_Rect,
-    eAgDrawType_Fill,
     eAgDrawType_Text,
     eAgDrawType_Img,
     eAgDrawType_Invert,
-    eAgDrawType_NumSystem
-    /* 可以添加自定义 */
 };
 
+// ---------------------------------------- must ----------------------------------------
+typedef struct {
+    AgDraw draw;
+    AgRect rect;
+    AgColor color;
+} AgFillDraw;
+void AgFillDraw_Init(AgFillDraw* draw, AgPainter* painter);
+
+// ---------------------------------------- custom ----------------------------------------
 typedef struct {
     AgDraw draw;
     ag_int16 x;
@@ -46,13 +54,6 @@ typedef struct {
     AgColor color;
 } AgRectDraw;
 void AgRectDraw_Init(AgRectDraw* draw, AgPainter* painter);
-
-typedef struct {
-    AgDraw draw;
-    AgRect rect;
-    AgColor color;
-} AgFillDraw;
-void AgFillDraw_Init(AgFillDraw* draw, AgPainter* painter);
 
 typedef struct {
     AgDraw draw;

@@ -4,5 +4,4 @@
 
 typedef struct {
     ag_uint32 type;
-    const AgRect* clip;
 } AgDraw;

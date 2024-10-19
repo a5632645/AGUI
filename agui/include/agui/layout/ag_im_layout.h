@@ -4,7 +4,7 @@
 
 /**
  * @brief 简单的操作布局，仅在vfun.layout有效
- * @param obj 
+ * @param obj 不能为NULL
  * @param align
  */
 void AgImLayout_Layout(AgObj* obj, AgAlignEnum align);

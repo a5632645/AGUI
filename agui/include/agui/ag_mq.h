@@ -1,6 +1,6 @@
 /*
  * \file ag_mq.h
- * \brief 线程不安全消息队列
+ * \brief 消息队列
 */
 
 #pragma once
@@ -24,7 +24,6 @@ void AgMqCallObj_Init(AgMqCallObj* obj);
 typedef struct __AgMq {
     AgList pending;
     AgList frees;
-    /* 一个锁 */
     void* lock;
 } AgMq;
 
