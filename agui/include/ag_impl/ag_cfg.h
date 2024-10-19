@@ -6,7 +6,7 @@
 #pragma once
 
 /*
- * @brief obj的边框没有重叠
+ * @brief obj的边框没有重叠，如果发生了覆盖，处于底部的obj更新时顶部的obj必须调用agobj_redraw
  */
 #define AGUI_NO_OBJ_OVERLAY 1
 
