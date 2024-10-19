@@ -43,6 +43,13 @@ void AgPainter_Init(AgPainter* painter);
 const AgRect* AgPainter_GetDrawAera(AgPainter* painter);
 
 /**
+ * @brief 获取现在空间的绘制区域
+ * @param painter 
+ * @param draw_aera 
+ */
+void AgPainter_GetLocalDrawAera(AgPainter* painter, AgRect* draw_aera);
+
+/**
  * @brief 获取全局空间的裁剪区域
  * @param painter 
  * @return 

@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "ag_impl/painter_impl.h"
+#include "ag_impl/draws_impl.h"
 #include "ag_comp/ag_list_view.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -64,6 +65,51 @@ static ag_int16 Height2(ag_int16 idx) {
     return idx % 40 + 1;
 }
 
+static void DrawScroll(AgPainter* painter, ag_int16 y, ag_int16 y_end) {
+    {
+        AgFillDraw draw;
+        AgFillDraw_Init(&draw, painter);
+        AgPainter_GetLocalDrawAera(painter, &draw.rect);
+        draw.color = AG_COLOR_BLACK;
+        painter->call_draw(painter, &draw.draw);
+    }
+    {
+        AgRectDraw draw;
+        AgRectDraw_Init(&draw, painter);
+        AgPainter_GetLocalDrawAera(painter, &draw.rect);
+        draw.color = AG_COLOR_GRAY;
+        painter->call_draw(painter, &draw.draw);
+    }
+    {
+        AgLineDraw draw;
+        AgLineDraw_Init(&draw, painter);
+        draw.color = AG_COLOR_WHITE;
+        draw.x1 = painter->draw_aera.w / 2;
+        draw.y1 = 0;
+        draw.y2 = painter->draw_aera.h;
+        draw.x2 = draw.x1;
+        painter->call_draw(painter, &draw.draw);
+    }
+    {
+        AgRectDraw draw;
+        AgRectDraw_Init(&draw, painter);
+        draw.rect.x = 0;
+        draw.rect.y = y;
+        draw.rect.w = painter->draw_aera.w;
+        draw.rect.h = y_end - y;
+        draw.color = AG_COLOR_WHITE;
+        painter->call_draw(painter, &draw.draw);
+    }
+}
+
+static void LvBackground(AgPainter* painter, const AgRect* rect) {
+    AgFillDraw draw;
+    AgFillDraw_Init(&draw, painter);
+    draw.color = AG_COLOR_BLACK;
+    AgRect_Copy(&draw.rect, rect);
+    painter->call_draw(painter, &draw.draw);
+}
+
 int main(int argc, char** argv) {
     AgRect screen = {0, 0, 800, 600};
     InitWindow(screen.w, screen.h, "raylib [core] example - basic window");
@@ -75,6 +121,9 @@ int main(int argc, char** argv) {
     AgListView lv;
     AgListView_Init(&lv, NULL, NULL);
     AgObj_SetBound(&lv.obj, &screen);
+    lv.background = LvBackground;
+    lv.scroll_bar = DrawScroll;
+    lv.scroll_bar_width = 16;
 
     AgListModel model;
     model.count = Count;

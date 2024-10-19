@@ -2,26 +2,48 @@
 
 // ---------------------------------------- impl ----------------------------------------
 static void __Draw(AgObj* obj, AgPainter* painter) {
-    AgPainter_SaveState(painter);
     AgListView* lv = AGUI_CONTAINER_OF(AgListView, obj, obj);
-    for (ag_int16 i = 0; i < lv->display_count; ++i) {
-        ag_int16 idx = lv->begin_idx + i;
-        ag_int16 h = lv->model->height(idx);
-        painter->draw_aera.h = h;
-        lv->model->draw(painter, idx, lv->select_idx == idx);
-        painter->draw_aera.y += h;
-    }
-    ag_int16 final_y = painter->draw_aera.y;
-    AgPainter_RestoreState(painter);
+    ag_int16 final_y = 0;
 
-    AgFillDraw draw;
-    AgFillDraw_Init(&draw, painter);
-    draw.color = AG_COLOR_BLACK;
-    draw.rect.x = 0;
-    draw.rect.y = final_y;
-    draw.rect.w = painter->draw_aera.w;
-    draw.rect.h = obj->bound.h - final_y;
-    painter->call_draw(painter, &draw.draw);
+    ag_int16 item_w = obj->bound.w;
+    if (NULL != lv->model) {
+        ag_int16 num_items = lv->model->count();
+        if (lv->display_count < num_items) {
+            ag_int16 w = lv->scroll_bar_width;
+            item_w -= w;
+            
+            ag_int16 x = obj->bound.w - w;
+            ag_int16 y = obj->bound.h * lv->begin_idx / num_items;
+            ag_int16 y_end = obj->bound.h * (lv->begin_idx + lv->display_count) / num_items;
+            
+            AgPainter_SaveState(painter);
+            painter->draw_aera.x = x;
+            painter->draw_aera.w = w;
+            lv->scroll_bar(painter, y, y_end);
+            AgPainter_RestoreState(painter);
+        }
+
+        AgPainter_SaveState(painter);
+        painter->draw_aera.w = item_w;
+        for (ag_int16 i = 0; i < lv->display_count; ++i) {
+            ag_int16 idx = lv->begin_idx + i;
+            ag_int16 h = lv->model->height(idx);
+            painter->draw_aera.h = h;
+            lv->model->draw(painter, idx, lv->select_idx == idx);
+            painter->draw_aera.y += h;
+        }
+        final_y = painter->draw_aera.y;
+        AgPainter_RestoreState(painter);
+    }
+
+    /* 填充背景 */
+    AgRect fill = {
+        .x = 0,
+        .y = final_y,
+        .w = item_w,
+        .h = obj->bound.h - final_y
+    };
+    lv->background(painter, &fill);
 }
 
 static void __Layout(AgObj* obj) {

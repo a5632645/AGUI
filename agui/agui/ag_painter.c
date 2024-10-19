@@ -12,7 +12,13 @@ void AgPainter_Init(AgPainter* painter) {
 }
 
 const AgRect* AgPainter_GetDrawAera(AgPainter* painter) {
-    return &painter->data[painter->depth].draw_aera;
+    return &painter->draw_aera;
+}
+
+void AgPainter_GetLocalDrawAera(AgPainter* painter, AgRect* draw_aera) {
+    AgRect_Copy(draw_aera, &painter->draw_aera);
+    draw_aera->x = 0;
+    draw_aera->y = 0;
 }
 
 const AgRect* AgPainter_GetClipAera(AgPainter* painter) {

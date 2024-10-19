@@ -19,6 +19,11 @@ typedef struct {
     ag_int16 begin_idx;         /* 最顶部的obj的idx */
     ag_int16 display_count;     /* 显示的数量 */
     ag_int16 select_idx;        /* 选中的obj的idx */
+
+    /* external */
+    ag_int16 scroll_bar_width; /* 滚动条的宽度 */
+    void(*scroll_bar)(AgPainter* painter, ag_int16 y, ag_int16 y_end); /* 绘制滚动条 */
+    void(*background)(AgPainter* painter, const AgRect* draw_aera); /* 绘制背景 */
 } AgListView;
 
 /**
