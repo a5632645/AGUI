@@ -1,5 +1,4 @@
 #include "ag_comp/text_view.h"
-#include "ag_comp/ag_dbg.h"
 
 // ---------------------------------------- private ----------------------------------------
 static void TextView_Draw(AgObj* obj, AgPainter* painter);
@@ -20,8 +19,6 @@ static void TextView_Draw(AgObj* obj, AgPainter* painter) {
     AgTextDraw_Init(&draw, painter);
     AgObj_GetLocalBound(&tv->obj, &draw.rect);
     painter->call_draw(painter, &draw.draw);
-
-    AgDbg_DrawFrame(obj, painter);
 }
 
 // ---------------------------------------- public ----------------------------------------

@@ -1,5 +1,4 @@
 #include "ag_comp/button.h"
-#include "ag_comp/ag_dbg.h"
 
 // ---------------------------------------- impl ----------------------------------------
 static void _Draw(AgObj* obj, AgPainter* painter) {

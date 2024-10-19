@@ -1,17 +1,5 @@
 #include "ag_key/ag_key.h"
 
-// ---------------------------------------- private ----------------------------------------
-static void _AddToSameLayer(AgObj* obj, AgObj* highlight) {
-    AgObj_LeaveParent(highlight);
-    if (NULL == obj->parent) {
-        AgObj_AddChild(obj, highlight);
-    }
-    else {
-        AgObj_AddChild(obj->parent, highlight);
-    }
-    AgObj_SetBound(highlight, &obj->bound);
-}
-
 // ---------------------------------------- impl ----------------------------------------
 static ag_bool _Filter(AgObj* obj) {
     return ag_true;

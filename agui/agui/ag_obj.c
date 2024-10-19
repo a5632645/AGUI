@@ -1,6 +1,57 @@
 #include "agui/ag_obj.h"
-#include "ag_comp/ag_dbg.h"
+#include "ag_impl/ag_cfg.h"
 #include "ag_impl/draws_impl.h"
+
+// ---------------------------------------- debug ----------------------------------------
+#if AGUI_DBG_WIRE_FRAME == 1
+static AgColor Hue2Rgb(uint8_t hue, uint8_t brightness) {
+    uint8_t r = 0, g = 0, b = 0;
+    if(hue < 60) {
+        r = brightness;
+        g = hue * 3 * brightness / 100;
+        b = 0;
+    } else if(hue < 120) {
+        r = brightness - hue * 3 * brightness / 100;
+        g = brightness;
+        b = 0;
+    } else if(hue < 180) {
+        r = 0;
+        g = brightness;
+        b = hue * 3 * brightness / 100;
+    } else if(hue < 240) {
+        r = 0;
+        g = brightness - hue * 3 * brightness / 100;
+        b = brightness;
+    } else if(hue < 300) {
+        r = hue * 3 * brightness / 100;
+        g = 0;
+        b = brightness;
+    } else {
+        r = brightness;
+        g = 0;
+        b = brightness - hue * 3 * brightness / 100;
+    }
+    return (AgColor){r, g, b, 255};
+}
+
+static AgColor AgDbg_RandomColor() {
+    static uint8_t last_hue = 0;
+    last_hue += 60;
+    last_hue %= 360;
+    return Hue2Rgb(last_hue, 255);
+}
+
+static void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter) {
+    AgRectDraw draw = {
+        .color = AgDbg_RandomColor()
+    };
+    AgRectDraw_Init(&draw, painter);
+    AgObj_GetLocalBound(obj, &draw.rect);
+    painter->call_draw(painter, &draw.draw);
+}
+#else
+static void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter) {}
+#endif
 
 // ---------------------------------------- impl ----------------------------------------
 static void Draw(AgObj* obj, AgPainter* painter) {
@@ -28,6 +79,7 @@ static void _InitVFunc(AgObj* obj) {
     obj->vfunc.event = Event;
 }
 
+#if AGUI_NO_OBJ_OVERLAY == 0
 static void _ReDraw(AgObj* obj);
 static void __PopUpRedraw(AgObj* obj, const AgRect* bound) {
     if (NULL == obj) {
@@ -76,13 +128,35 @@ static void _ReDraw(AgObj* obj) {
     obj->flags.redraw = ag_true;
     obj->flags.invalid = ag_true;
 }
+#else
+static void _ReDraw(AgObj* obj) {
+    if (NULL == obj) {
+        return;
+    }
+    if (ag_false == obj->flags.visiable) {
+        return;
+    }
+    
+    obj->flags.redraw = ag_true;
+    obj->flags.invalid = ag_true;
+
+    while (NULL != obj) {
+        if (ag_true == obj->flags.transpant) {
+            _ReDraw(obj->parent);
+        }
+        else {
+            obj->flags.invalid = ag_true;
+            obj = obj->parent;
+        }
+    }
+}
+#endif
 
 /**
  * @brief 递归绘制节点
  * @param obj 
  * @param painter 
  */
-extern void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter);
 void AgObj_DrawObjInObj(AgObj* obj, AgPainter* painter) {
     if (NULL != obj) {
         /* 保存绘制区 */

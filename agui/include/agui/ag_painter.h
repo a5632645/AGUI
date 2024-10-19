@@ -3,8 +3,8 @@
 #include "agui/ag_color.h"
 #include "agui/ag_rect.h"
 #include "agui/ag_draw.h"
+#include "ag_impl/ag_cfg.h"
 
-#define AGUI_PAINTER_MAX_DEPTH 32
 typedef struct __AgPainter {
     // ---------------------------------------- interface ----------------------------------------
     /* 获取绘制后端，如u8g2,adfurit等 */
@@ -26,7 +26,7 @@ typedef struct __AgPainter {
     struct __PainterData {
         AgRect draw_aera;
         ag_bool always_redraw;
-    } data[AGUI_PAINTER_MAX_DEPTH];
+    } data[AGUI_PAINTER_MAX_STEPS];
 } AgPainter;
 
 /**
