@@ -8,5 +8,6 @@ enum {
     eAgObjType_TextView = 1,
     eAgObjType_Button,
     eAgObjType_StackLayout,
+    eAgObjType_ListView,
     eAgObjType_NumSystem
 };

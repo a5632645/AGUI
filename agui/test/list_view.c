@@ -5,16 +5,20 @@
 #include "stdlib.h"
 
 // ---------------------------------------- model ----------------------------------------
-static ag_int32 Count() {
+static ag_int16 Count() {
     return 100;
 }
 
-static void Draw(const AgObj* obj, AgPainter* painter, ag_uint32 idx, ag_bool selected) {
+static void Draw(AgPainter* painter, ag_int16 idx, ag_bool selected) {
     {
         AgFillDraw draw;
         AgFillDraw_Init(&draw, painter);
         draw.color = selected ? AG_COLOR_GRAY : AG_COLOR_BLACK;
-        AgObj_GetLocalBound(obj, &draw.rect);
+
+        AgRect_Copy(&draw.rect, &painter->draw_aera);
+        draw.rect.x = 0;
+        draw.rect.y = 0;
+
         painter->call_draw(painter, &draw.draw);
     }
 
@@ -23,36 +27,40 @@ static void Draw(const AgObj* obj, AgPainter* painter, ag_uint32 idx, ag_bool se
     draw.align = eAgAlign_Center;
     draw.color = AG_COLOR_WHITE;
     draw.font_size = 20;
-    AgObj_GetLocalBound(obj, &draw.rect);
+
+    AgRect_Copy(&draw.rect, &painter->draw_aera);
+    draw.rect.x = 0;
+    draw.rect.y = 0;
+
     char buff[20] = {};
     draw.text = buff;
     sprintf(buff, "%d", idx);
     painter->call_draw(painter, &draw.draw);
 }
 
-static void Event(AgListView* lv, AgEvent* event, ag_uint32 idx) {
+static void Event(AgListView* lv, AgEvent* event, ag_int16 idx) {
     
 }
 
-static ag_int16 Height(ag_uint32 idx) {
+static ag_int16 Height(ag_int16 idx) {
     return 31;
 }
 
 // ---------------------------------------- model2 ----------------------------------------
-static ag_int32 model2_count = 22;
-static ag_int32 Count2() {
+static ag_int16 model2_count = 0;
+static ag_int16 Count2() {
     return model2_count;
 }
 
-static ag_int32 Count3() {
+static ag_int16 Count3() {
     return 10;
 }
 
-static ag_int32 Count4() {
+static ag_int16 Count4() {
     return 200;
 }
 
-static ag_int16 Height2(ag_uint32 idx) {
+static ag_int16 Height2(ag_int16 idx) {
     return idx % 40 + 1;
 }
 

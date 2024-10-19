@@ -170,7 +170,6 @@ void AgObj_Init2(AgObj* obj, AgObj* parent) {
     _InitFlags(obj);
     AgRect_Zero(&obj->bound);
     obj->obj_type = eAgObjType_Obj;
-    obj->id = 0;
     obj->parent = parent;
     if (NULL != parent) {
         AgObj_AddChild(parent, obj);
