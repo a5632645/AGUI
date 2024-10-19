@@ -5,17 +5,16 @@
 
 #pragma once
 #include "agui/ag_draw.h"
-#include "agui/ag_painter.h"
 #include "agui/ag_color.h"
 #include "agui/ag_align.h"
 
 enum {
     eAgDrawType_Fill = 0, /* 不能改变的 */
+    eAgDrawType_Rect,
 
     /* 自定义的 */
     eAgDrawType_Pixel,
     eAgDrawType_Line,
-    eAgDrawType_Rect,
     eAgDrawType_Text,
     eAgDrawType_Img,
     eAgDrawType_Invert,
@@ -27,7 +26,14 @@ typedef struct {
     AgRect rect;
     AgColor color;
 } AgFillDraw;
-void AgFillDraw_Init(AgFillDraw* draw, AgPainter* painter);
+void AgFillDraw_Init(AgFillDraw* draw);
+
+typedef struct {
+    AgDraw draw;
+    AgRect rect;
+    AgColor color;
+} AgRectDraw;
+void AgRectDraw_Init(AgRectDraw* draw);
 
 // ---------------------------------------- custom ----------------------------------------
 typedef struct {
@@ -36,7 +42,7 @@ typedef struct {
     ag_int16 y;
     AgColor color;
 } AgPixelDraw;
-void AgPixelDraw_Init(AgPixelDraw* draw, AgPainter* painter);
+void AgPixelDraw_Init(AgPixelDraw* draw);
 
 typedef struct {
     AgDraw draw;
@@ -46,14 +52,7 @@ typedef struct {
     ag_int16 y2;
     AgColor color;
 } AgLineDraw;
-void AgLineDraw_Init(AgLineDraw* draw, AgPainter* painter);
-
-typedef struct {
-    AgDraw draw;
-    AgRect rect;
-    AgColor color;
-} AgRectDraw;
-void AgRectDraw_Init(AgRectDraw* draw, AgPainter* painter);
+void AgLineDraw_Init(AgLineDraw* draw);
 
 typedef struct {
     AgDraw draw;
@@ -63,7 +62,7 @@ typedef struct {
     AgAlignEnum align;
     AgColor color;
 } AgTextDraw;
-void AgTextDraw_Init(AgTextDraw* draw, AgPainter* painter);
+void AgTextDraw_Init(AgTextDraw* draw);
 
 typedef struct {
     AgDraw draw;
@@ -72,10 +71,10 @@ typedef struct {
     ag_int16 y;
     AgColor color;
 } AgImgDraw;
-void AgImgDraw_Init(AgImgDraw* draw, AgPainter* painter);
+void AgImgDraw_Init(AgImgDraw* draw);
 
 typedef struct {
     AgDraw draw;
     AgRect rect;
 } AgInvertDraw;
-void AgInvertDraw_Init(AgInvertDraw* draw, AgPainter* painter);
+void AgInvertDraw_Init(AgInvertDraw* draw);

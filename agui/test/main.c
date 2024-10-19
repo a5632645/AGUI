@@ -13,7 +13,7 @@ static ag_int16 Count() {
 static void Draw(AgPainter* painter, ag_int16 idx, ag_bool selected) {
     {
         AgFillDraw draw;
-        AgFillDraw_Init(&draw, painter);
+        AgFillDraw_Init(&draw);
         draw.color = selected ? AG_COLOR_GRAY : AG_COLOR_BLACK;
 
         AgRect_Copy(&draw.rect, &painter->draw_aera);
@@ -24,7 +24,7 @@ static void Draw(AgPainter* painter, ag_int16 idx, ag_bool selected) {
     }
 
     AgTextDraw draw;
-    AgTextDraw_Init(&draw, painter);
+    AgTextDraw_Init(&draw);
     draw.align = eAgAlign_Center;
     draw.color = AG_COLOR_WHITE;
     draw.font_size = 20;
@@ -68,21 +68,21 @@ static ag_int16 Height2(ag_int16 idx) {
 static void DrawScroll(AgPainter* painter, ag_int16 y, ag_int16 y_end) {
     {
         AgFillDraw draw;
-        AgFillDraw_Init(&draw, painter);
+        AgFillDraw_Init(&draw);
         AgPainter_GetLocalDrawAera(painter, &draw.rect);
         draw.color = AG_COLOR_BLACK;
         painter->call_draw(painter, &draw.draw);
     }
     {
         AgRectDraw draw;
-        AgRectDraw_Init(&draw, painter);
+        AgRectDraw_Init(&draw);
         AgPainter_GetLocalDrawAera(painter, &draw.rect);
         draw.color = AG_COLOR_GRAY;
         painter->call_draw(painter, &draw.draw);
     }
     {
         AgLineDraw draw;
-        AgLineDraw_Init(&draw, painter);
+        AgLineDraw_Init(&draw);
         draw.color = AG_COLOR_WHITE;
         draw.x1 = painter->draw_aera.w / 2;
         draw.y1 = 0;
@@ -92,7 +92,7 @@ static void DrawScroll(AgPainter* painter, ag_int16 y, ag_int16 y_end) {
     }
     {
         AgRectDraw draw;
-        AgRectDraw_Init(&draw, painter);
+        AgRectDraw_Init(&draw);
         draw.rect.x = 0;
         draw.rect.y = y;
         draw.rect.w = painter->draw_aera.w;
@@ -104,7 +104,7 @@ static void DrawScroll(AgPainter* painter, ag_int16 y, ag_int16 y_end) {
 
 static void LvBackground(AgPainter* painter, const AgRect* rect) {
     AgFillDraw draw;
-    AgFillDraw_Init(&draw, painter);
+    AgFillDraw_Init(&draw);
     draw.color = AG_COLOR_BLACK;
     AgRect_Copy(&draw.rect, rect);
     painter->call_draw(painter, &draw.draw);

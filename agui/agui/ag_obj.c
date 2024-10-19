@@ -45,7 +45,7 @@ static void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter) {
     AgRectDraw draw = {
         .color = AgDbg_RandomColor()
     };
-    AgRectDraw_Init(&draw, painter);
+    AgRectDraw_Init(&draw);
     AgObj_GetLocalBound(obj, &draw.rect);
     painter->call_draw(painter, &draw.draw);
 }
@@ -58,7 +58,7 @@ static void Draw(AgObj* obj, AgPainter* painter) {
     AgFillDraw fill = {
         .color = AG_COLOR_BLACK,
     };
-    AgFillDraw_Init(&fill, painter);
+    AgFillDraw_Init(&fill);
     AgObj_GetLocalBound(obj, &fill.rect);
     painter->call_draw(painter, &fill.draw);
 }
