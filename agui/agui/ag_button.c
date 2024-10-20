@@ -127,5 +127,7 @@ void AgButton_Tick(AgButton* button, ag_bool press, ag_uint16 escape) {
         }
 #endif
         break;
+    default:
+        break;
     }
 }

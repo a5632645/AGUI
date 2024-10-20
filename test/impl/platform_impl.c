@@ -1,4 +1,3 @@
-#include "ag_impl/atomic_impl.h"
 #include "ag_impl/lock_impl.h"
 #include "ag_impl/mem_impl.h"
 #include <stdlib.h>

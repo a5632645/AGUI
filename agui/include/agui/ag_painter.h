@@ -1,6 +1,5 @@
 #pragma once
 #include "agui/ag_types.h"
-#include "agui/ag_color.h"
 #include "agui/ag_rect.h"
 #include "agui/ag_draw.h"
 #include "ag_impl/ag_cfg.h"
