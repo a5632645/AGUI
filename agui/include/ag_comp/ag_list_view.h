@@ -11,6 +11,11 @@ struct __AgListModel;
 
 // ---------------------------------------- view ----------------------------------------
 
+typedef enum {
+    eAgListViewStyle_Horizontal = 0,
+    eAgListViewStyle_Vertical
+} AgListViewStyle;
+
 typedef struct {
     /* interface */
     AgObj obj;
@@ -19,6 +24,7 @@ typedef struct {
     ag_int16 begin_idx;         /* 最顶部的obj的idx */
     ag_int16 display_count;     /* 显示的数量 */
     ag_int16 select_idx;        /* 选中的obj的idx */
+    AgListViewStyle style;     /* 横向或者纵向 */
 
     /* external */
     ag_int16 scroll_bar_width; /* 滚动条的宽度 */
@@ -75,15 +81,21 @@ void AgListView_Scroll(AgListView* lv, ag_int16 shift);
  */
 void AgListView_SetSelectIdx(AgListView* lv, ag_int16 idx);
 
+/*
+ * \brief 设置样式
+ * \style 横向或者纵向
+ */
+void AgListView_SetStyle(AgListView* lv, AgListViewStyle style);
+
 // ---------------------------------------- model ----------------------------------------
 
 typedef struct __AgListModel {
     /* 有多少 */
-    ag_int16(*count)();
+    ag_int16(*count)(struct __AgListModel* model);
     /* 有多高 */
-    ag_int16(*height)(ag_int16 idx);
+    ag_int16(*height)(AgListView* lv, ag_int16 idx);
     /* 怎么绘制 */
     void(*draw)(AgPainter* painter, ag_int16 idx, ag_bool selected);
     /* 发生了什么 */
-    void(*event)(AgListView* lv, AgEvent* event, ag_int16 idx);
+    void(*event)(struct __AgListModel* model, AgListView* lv, AgEvent* event, ag_int16 idx);
 } AgListModel;
