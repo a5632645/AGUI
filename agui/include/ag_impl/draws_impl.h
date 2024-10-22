@@ -1,6 +1,6 @@
 /*
  * \file draws_impl.h
- * \brief 在这里定义各种绘制，不要修改，可以增加
+ * \brief 在这里定义各种绘制，不依赖该文件，可能要移动出去
  */
 
 #pragma once
@@ -9,10 +9,8 @@
 #include "agui/ag_align.h"
 
 enum {
-    eAgDrawType_Fill = 0, /* 不能改变的 */
+    eAgDrawType_Fill = 0,
     eAgDrawType_Rect,
-
-    /* 自定义的 */
     eAgDrawType_Pixel,
     eAgDrawType_Line,
     eAgDrawType_Text,
@@ -20,7 +18,6 @@ enum {
     eAgDrawType_Invert,
 };
 
-// ---------------------------------------- must ----------------------------------------
 typedef struct {
     AgDraw draw;
     AgRect rect;

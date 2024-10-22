@@ -93,7 +93,10 @@ void AgStackLayout_Push3(AgStackLayout* sl, AgList* ret, AgObj* obj) {
     /* 找到，从栈中删除 */
     AgList_Cut(&sl->stack, ret, &obj->node);
     AgList_Popfront(ret);
-    AgStackLayout_Push(sl, obj);
+    AgObj* old = _ChangeObj(sl, obj);
+    if (NULL != old) {
+        AgList_PushBack(ret, &old->node);
+    }
 }
 
 AgObj* AgStackLayout_Pop(AgStackLayout* sl) {

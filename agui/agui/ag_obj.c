@@ -1,6 +1,6 @@
 #include "agui/ag_obj.h"
 #include "ag_impl/ag_cfg.h"
-#include "ag_impl/draws_impl.h"
+#include "ag_impl/default_impl.h"
 
 // ---------------------------------------- debug ----------------------------------------
 #if AGUI_DBG_WIRE_FRAME == 1
@@ -42,26 +42,16 @@ static AgColor AgDbg_RandomColor() {
 }
 
 static void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter) {
-    AgRectDraw draw = {
-        .color = AgDbg_RandomColor()
-    };
-    AgRectDraw_Init(&draw);
-    AgObj_GetLocalBound(obj, &draw.rect);
-    painter->call_draw(painter, &draw.draw);
+    AgRect rect;
+    AgObj_GetLocalBound(obj, &rect);
+    AgColor color = AgDbg_RandomColor();
+    __DrawColorFrame(painter, &rect, color);
 }
 #else
 static void AgDbg_DrawFrame(AgObj* obj, AgPainter* painter) {}
 #endif
 
 // ---------------------------------------- impl ----------------------------------------
-static void Draw(AgObj* obj, AgPainter* painter) {
-    AgFillDraw fill = {
-        .color = AG_COLOR_BLACK,
-    };
-    AgFillDraw_Init(&fill);
-    AgObj_GetLocalBound(obj, &fill.rect);
-    painter->call_draw(painter, &fill.draw);
-}
 static void Event(AgObj* obj, const AgEvent* e) {}
 static void Laytout(AgObj* obj) {}
 
@@ -74,7 +64,7 @@ static void _InitFlags(AgObj* obj) {
 }
 
 static void _InitVFunc(AgObj* obj) {
-    obj->vfunc.draw = Draw;
+    obj->vfunc.draw = __EmptyObjDraw;
     obj->vfunc.layout = Laytout;
     obj->vfunc.event = Event;
 }
