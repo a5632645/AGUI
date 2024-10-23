@@ -4,6 +4,10 @@
 #include "agui/ag_draw.h"
 #include "ag_impl/ag_cfg.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct __AgPainter {
     // ---------------------------------------- interface ----------------------------------------
     void*(*get_backend)(struct __AgPainter* painter);                   /* 获取绘制后端，如u8g2,adfurit等 */
@@ -44,3 +48,7 @@ void AgPainter_GetLocalDrawAera(AgPainter* painter, AgRect* draw_aera);
 void AgPainter_SaveState(AgPainter* painter);
 void AgPainter_RestoreState(AgPainter* painter);
 void AgPainter_PrepareDraw(AgPainter* painter, const AgRect* global_aera);
+
+#ifdef __cplusplus
+}
+#endif

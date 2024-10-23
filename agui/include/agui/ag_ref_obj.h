@@ -6,6 +6,10 @@
 #pragma once
 #include "agui/ag_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     void* ptr;
 } AgRefObj;
@@ -41,3 +45,7 @@ void AgRefObj_AddRef(AgRefObj* obj, AgRefObj* master);
  * @param obj 不能为NULL
  */
 void AgRefObj_DestorySlave(AgRefObj* obj);
+
+#ifdef __cplusplus
+}
+#endif

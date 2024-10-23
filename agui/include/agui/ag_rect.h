@@ -1,6 +1,10 @@
 #pragma once
 #include "agui/ag_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     ag_int16 x;
     ag_int16 y;
@@ -45,3 +49,7 @@ void AgRect_Copy(AgRect* dest, const AgRect* src);
  *           bootom↑
  */
 void AgRect_Expand(AgRect* rect, ag_int16 dx, ag_int16 dy);
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     eAgAlign_XLeft = 0b01,
     eAgAlign_XCenter = 0b10,
@@ -15,3 +19,7 @@ typedef enum {
 
 #define AGUI_X_ALIGN(x) ((x) & 0b11)
 #define AGUI_Y_ALIGN(y) (((y) & 0b1100))
+
+#ifdef __cplusplus
+}
+#endif

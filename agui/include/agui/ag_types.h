@@ -2,6 +2,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef uint32_t ag_uint32;
 typedef int32_t ag_int32;
 
@@ -38,3 +42,7 @@ typedef bool ag_bool;
 #define AGUI_CONTAINER_OF(STRUCT, MEMBER, OBJ_ADDR) (STRUCT*)((size_t)(OBJ_ADDR) - AGUI_OFFSET_OF(STRUCT, MEMBER))
 #define AGUI_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define AGUI_MAX(a, b) ((a) > (b) ? (a) : (b))
+
+#ifdef __cplusplus
+}
+#endif

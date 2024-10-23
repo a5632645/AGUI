@@ -1,6 +1,10 @@
 #pragma once
 #include "agui/ag_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct __agui_list {
     struct __agui_list* prev;
     struct __agui_list* next;
@@ -79,3 +83,7 @@ void AgList_Append(AgList* list, AgList* other);
  * @param node 
  */
 void AgListNode_Init(AgListNode* node);
+
+#ifdef __cplusplus
+}
+#endif

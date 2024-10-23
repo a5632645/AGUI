@@ -8,6 +8,10 @@
 #include "agui/ag_color.h"
 #include "agui/ag_align.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum {
     eAgDrawType_Fill = 0,
     eAgDrawType_Rect,
@@ -75,3 +79,7 @@ typedef struct {
     AgRect rect;
 } AgInvertDraw;
 void AgInvertDraw_Init(AgInvertDraw* draw);
+
+#ifdef __cplusplus
+}
+#endif

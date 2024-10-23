@@ -7,6 +7,10 @@
 #include "agui/ag_obj.h"
 #include "agui/ag_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     eAgKeyAction_GoDown = 0,
     eAgKeyAction_GoUp,
@@ -77,3 +81,7 @@ void AgKeySwitcher_GoRoot(AgKeySwitcher* ks);
  * @param event 不能为NULL
  */
 void AgKeySwitcher_SendEvent(AgKeySwitcher* ks, AgEvent* event);
+
+#ifdef __cplusplus
+}
+#endif

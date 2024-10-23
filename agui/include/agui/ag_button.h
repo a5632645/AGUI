@@ -1,6 +1,10 @@
 #pragma once
 #include "agui/ag_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // ---------------------------------------- code clip ----------------------------------------
 #define AGUI_BUTTON_SHORT_LONG_TRIGGER 1
 #define AGUI_BUTTON_LONG_PRESS_CLICK 1
@@ -80,3 +84,7 @@ void AgButton_Init(AgButton* button);
  * @param escape 流过的时间
  */
 void AgButton_Tick(AgButton* button, ag_bool press, ag_uint16 escape);
+
+#ifdef __cplusplus
+}
+#endif

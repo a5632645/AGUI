@@ -5,6 +5,10 @@
 #include "agui/ag_painter.h"
 #include "agui/ag_event.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct __AgObj;
 
 typedef struct {
@@ -160,10 +164,16 @@ AgObj* AgObj_HitObj(AgObj* obj, ag_int16 x, ag_int16 y);
 void AgObj_SetVisiable(AgObj* obj, ag_bool visiable);
 
 /**
- * @brief 标记该节点需要重新绘制，如果被遮挡可能发生错误的绘制
+ * @brief 标记该节点需要重新绘制
  * @param obj 不能为NULL
  */
 void AgObj_Redraw(AgObj* obj);
+
+/**
+ * @brief 重新绘制根节点
+ * @param obj 不能为NULL
+ */
+void AgObj_RedrawRoot(AgObj* obj);
 
 // ---------------------------------------- 布局操作 ----------------------------------------
 /**
@@ -238,3 +248,7 @@ void AgObj_CalcBound(AgObj* obj);
  * @param event 不能为NULL
  */
 void AgObj_SendEvent(AgObj* obj, AgEvent* event);
+
+#ifdef __cplusplus
+}
+#endif

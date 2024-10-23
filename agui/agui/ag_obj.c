@@ -345,6 +345,14 @@ void AgObj_Redraw(AgObj* obj) {
     }
 }
 
+void AgObj_RedrawRoot(AgObj* obj) {
+    while (NULL != obj->parent) {
+        obj = obj->parent;
+    }
+    obj->flags.redraw = ag_true;
+    obj->flags.invalid = ag_true;
+}
+
 void AgObj_DoLayout(AgObj* obj) {
     obj->vfunc.layout(obj);
 }

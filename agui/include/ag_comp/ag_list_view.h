@@ -6,6 +6,10 @@
 #pragma once
 #include "ag_comp/deps.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // ---------------------------------------- declare ----------------------------------------
 struct __AgListModel;
 
@@ -99,3 +103,7 @@ typedef struct __AgListModel {
     /* 发生了什么 */
     void(*event)(struct __AgListModel* model, AgListView* lv, AgEvent* event, ag_int16 idx);
 } AgListModel;
+
+#ifdef __cplusplus
+}
+#endif

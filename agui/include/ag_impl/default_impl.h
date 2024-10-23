@@ -15,5 +15,13 @@
 #include "agui/ag_rect.h"
 #include "agui/ag_color.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void __EmptyObjDraw(AgObj* obj, AgPainter* painter);
 void __DrawColorFrame(AgPainter* painter, const AgRect* aera, AgColor color);
+
+#ifdef __cplusplus
+}
+#endif

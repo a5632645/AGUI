@@ -1,6 +1,10 @@
 #pragma once
 #include "agui/ag_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct __AgObj;
 
 typedef struct {
@@ -9,3 +13,8 @@ typedef struct {
     ag_uint8 id;
     struct __AgObj* sender;
 } AgEvent;
+
+
+#ifdef __cplusplus
+}
+#endif

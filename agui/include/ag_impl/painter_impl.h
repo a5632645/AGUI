@@ -7,9 +7,17 @@
 #include "agui/ag_painter.h"
 #include "raylib.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     AgPainter painter;
     RenderTexture2D texture;
 } PainterImpl;
 
 void PainterImpl_Init(PainterImpl* impl);
+
+#ifdef __cplusplus
+}
+#endif

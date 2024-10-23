@@ -7,6 +7,10 @@
 #include "agui/ag_types.h"
 #include "agui/ag_list.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct __AgTimer {
     /* interface */
     AgListNode node;
@@ -25,3 +29,7 @@ void AgTimer_Remove(AgTimer* timer);
 void AgTimer_Pause(AgTimer* timer);
 void AgTimer_Resume(AgTimer* timer);
 void AgTimer_Destory(AgTimer* timer);
+
+#ifdef __cplusplus
+}
+#endif

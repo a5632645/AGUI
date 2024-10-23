@@ -7,6 +7,10 @@
 #include "agui/ag_types.h"
 #include "agui/ag_list.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // ---------------------------------------- AgMqCallObj ----------------------------------------
 typedef struct __AgMqCallObj {
     AgListNode node;
@@ -53,3 +57,7 @@ ag_bool AgMq_Post(AgMq* mq, void(*call)(void* arg), void* arg);
  * @param mq 
  */
 void AgMq_Destroy(AgMq* mq);
+
+#ifdef __cplusplus
+}
+#endif
