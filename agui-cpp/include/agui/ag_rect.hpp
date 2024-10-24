@@ -10,7 +10,9 @@ struct AgRect {
     ag_int16 h{};
 
     constexpr void Zero();
-    constexpr ag_bool operator==(const AgRect& other) const;
+    constexpr ag_bool operator==(const AgRect& other) const {
+        return x == other.x && y == other.y && w == other.w && h == other.h;
+    }
     constexpr ag_bool IsIntersected(const AgRect& other) const;
     constexpr void Expand(ag_int16 dx, ag_int16 dy);
 };

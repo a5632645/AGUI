@@ -410,7 +410,7 @@ void AgObj::CalcBound() {
 void AgObj::SendEvent(AgEvent& event) {
     AgObj* obj = this;
     while (NULL != obj && ag_false == event.handled) {
-        AgObj* parent = parent;
+        AgObj* parent = parent_;
         parent->Event(event);
         obj = parent;
     }

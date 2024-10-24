@@ -11,6 +11,7 @@ namespace agui {
 
 class AgTimer : public AgListNode {
 public:
+    AgTimer() : repeat_(ag_true), running_(ag_true) {}
     virtual ~AgTimer() = default;
     virtual void Timeout() = 0;
 
@@ -23,8 +24,8 @@ public:
 private:
     ag_uint32 count_{};
     ag_uint32 period_{};
-    ag_bool repeat_ : 1 = ag_true;
-    ag_bool running_ : 1 = ag_false;
+    ag_bool repeat_ : 1;
+    ag_bool running_ : 1;
 };
 
 }

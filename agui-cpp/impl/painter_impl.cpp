@@ -1,7 +1,7 @@
 #include "ag_impl/painter_impl.hpp"
 #include "ag_impl/draws_impl.hpp"
 
-namespace agui::impl {
+namespace agui { namespace impl {
 
 // ---------------------------------------- private ----------------------------------------
 static Color ColorTransfrom(AgColor color) {
@@ -127,4 +127,4 @@ PainterImpl::~PainterImpl() {
     UnloadRenderTexture(texture_);
 }
 
-}
+} }

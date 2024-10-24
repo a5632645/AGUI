@@ -224,7 +224,7 @@ AgListView::AgListView(AgObj* parent)
 }
 
 void AgListView::SetModel(AgListModel* model) {
-    model = model;
+    model_ = model;
     Update();
 }
 
@@ -327,7 +327,7 @@ void AgListView::SetStyle(AgListViewStyle style) {
     if (style_ == style) {
         return;
     }
-    style = style;
+    style_ = style;
     ReDraw();
 }
 

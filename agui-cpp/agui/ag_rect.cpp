@@ -9,22 +9,6 @@ constexpr void AgRect::Zero() {
     h = 0;
 }
 
-constexpr ag_bool AgRect::operator==(const AgRect& rect2) const {
-    if (x != rect2.x) {
-        return ag_false;
-    }
-    if (y != rect2.y) {
-        return ag_false;
-    }
-    if (w != rect2.w) {
-        return ag_false;
-    }
-    if (h != rect2.h) {
-        return ag_false;
-    }
-    return ag_true;
-}
-
 constexpr ag_bool AgRect::IsIntersected(const AgRect& rect2) const {
     // 矩形1的边界
     ag_int16 rect1_left = x;
