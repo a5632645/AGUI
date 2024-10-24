@@ -85,6 +85,21 @@ int main() {
                 node = node->next;
             }
         }
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            AgObj* o = AgStackLayout_Pop(&sl);
+            if (o == &obj1) {
+                printf("pop obj1\n");
+            }
+            if (o == &obj2) {
+                printf("pop obj2\n");
+            }
+            if (o == &obj3) {
+                printf("pop obj3\n");
+            }
+            if (NULL == o) {
+                printf("pop NULL\n");
+            }
+        }
 
         if (sl.obj.flags.invalid) {
             AgObj_DrawObj(&sl.obj, &impl.painter);

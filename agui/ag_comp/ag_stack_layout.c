@@ -10,8 +10,10 @@ static AgObj* _ChangeObj(AgStackLayout* sl, AgObj* obj) {
     if (NULL != curr) {
         AgObj_LeaveParent(curr);
     }
-    AgObj_AddChild(&sl->obj, obj);
-    _Layout(&sl->obj);
+    if (NULL != obj) {
+        AgObj_AddChild(&sl->obj, obj);
+        _Layout(&sl->obj);
+    }
     AgObj_Redraw(&sl->obj);
     return curr;
 }
@@ -100,13 +102,14 @@ void AgStackLayout_Push3(AgStackLayout* sl, AgList* ret, AgObj* obj) {
 }
 
 AgObj* AgStackLayout_Pop(AgStackLayout* sl) {
-    AgObj* ret = NULL;
     AgListNode* top = AgList_Popback(&sl->stack);
     if (NULL != top) {
         AgObj* obj = AGUI_CONTAINER_OF(AgObj, node, top);
-        ret = _ChangeObj(sl, obj);
+        return _ChangeObj(sl, obj);
     }
-    return ret;
+    else {
+        return _ChangeObj(sl, NULL);
+    }
 }
 
 AgObj* AgStackLayout_Current(AgStackLayout* sl) {

@@ -18,30 +18,30 @@ static void _DecreseCount(RefCounter* rc) {
 
 // ---------------------------------------- public ----------------------------------------
 
-void AgRefObj_Init(AgRefObj* obj) {
+void AgMasterRefObj_Init(AgMasterRefObj* obj) {
     obj->ptr = AgImpl_MemAlloc(sizeof(RefCounter));
     ((RefCounter*)obj->ptr)->ref_count = 1;
     ((RefCounter*)obj->ptr)->master_dead = ag_false;
 }
 
-void AgRefObj_DestoryMaster(AgRefObj* obj) {
+void AgMasterRefObj_Destory(AgMasterRefObj* obj) {
     RefCounter* rc = (RefCounter*)obj->ptr;
     AG_ATOMIC_INT_STORE(&rc->master_dead, ag_true);
     _DecreseCount(rc);
 }
 
-ag_bool AgRefObj_IsMasterDead(AgRefObj* obj) {
+ag_bool AgSlaveRefObj_IsMasterDead(AgSlaveRefObj* obj) {
     RefCounter* rc = (RefCounter*)obj->ptr;
     return AG_ATOMIC_BOOL_LOAD(&rc->master_dead);
 }
 
-void AgRefObj_AddRef(AgRefObj* obj, AgRefObj* master) {
+void AgSlaveRefObj_Init(AgSlaveRefObj* obj, AgMasterRefObj* master) {
     obj->ptr = master->ptr;
     RefCounter* rc = (RefCounter*)obj->ptr;
     AG_ATOMIC_INT_ADD(&rc->ref_count, 1);
 }
 
-void AgRefObj_DestorySlave(AgRefObj* obj) {
+void AgSlaveRefObj_Destory(AgSlaveRefObj* obj) {
     RefCounter* rc = (RefCounter*)obj->ptr;
     _DecreseCount(rc);
 }
