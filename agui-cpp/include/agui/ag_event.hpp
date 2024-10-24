@@ -15,6 +15,8 @@ struct AgEvent {
     T& As() {
         return *static_cast<T*>(this);
     }
+
+    virtual ~AgEvent() = default;
 };
 
 }

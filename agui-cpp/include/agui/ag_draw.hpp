@@ -18,6 +18,8 @@ struct AgDraw {
     const T& As() const {
         return *static_cast<const T*>(this);
     }
+
+    virtual ~AgDraw() = default;
 };
 
 }

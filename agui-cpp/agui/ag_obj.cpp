@@ -174,6 +174,10 @@ void AgObj::Draw(AgPainter& painter) {
     __EmptyObjDraw(*this, painter);
 }
 
+AgObj::~AgObj() {
+    RemoveAllChild();
+}
+
 NullablePtr<AgObj> AgObj::FirstChild() {
     return childern_.GetHead()->As<AgObj>();
 }

@@ -26,6 +26,10 @@ namespace agui {
 #endif
 
 // ---------------------------------------- public ----------------------------------------
+void AgButton::SetListener(NullablePtr<void(*)(AgButton&, AgButtonEvent)> callback) {
+    callback_ = callback;
+}
+
 void AgButton::Tick(ag_bool press, ag_uint16 escape) {
     switch (state) { /* 状态转移 */
     case AgButtonStateEnum::eAgButtonState_Idel:

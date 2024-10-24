@@ -36,6 +36,20 @@ void AgStackLayout::Layout() {
     }
 }
 
+void AgStackLayout::Event(AgEvent& event) {
+    auto curr = Current();
+    if (curr) {
+        curr->Event(event);
+    }
+}
+
+void AgStackLayout::Draw(AgPainter& painter) {
+    auto curr = Current();
+    if (curr) {
+        curr->Draw(painter);
+    }
+}
+
 // ---------------------------------------- public ----------------------------------------
 
 void AgStackLayout::Push(AgObj& obj) {

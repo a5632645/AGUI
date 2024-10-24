@@ -13,7 +13,7 @@ namespace agui {
  */
 class AgObj : public AgListNode {
 public:
-    virtual ~AgObj() = default;
+    ~AgObj() override;
     virtual void Draw(AgPainter& painter);
     virtual void Layout() {}
     virtual void Event(AgEvent& event) {}
