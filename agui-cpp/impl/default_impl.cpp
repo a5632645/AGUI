@@ -4,14 +4,14 @@
 namespace agui {
 
 void __EmptyObjDraw(AgObj& obj, AgPainter& painter) {
-    AgFillDraw draw;
+    impl::AgFillDraw draw;
     draw.color = colors::kBlack;
     draw.rect = obj.GetBound();
     painter.CallDraw(draw);
 }
 
 void __DrawColorFrame(AgPainter& painter, const AgRect& aera, AgColor color) {
-    AgRectDraw draw;
+    impl::AgRectDraw draw;
     draw.rect = aera;
     draw.color = color;
     painter.CallDraw(draw);

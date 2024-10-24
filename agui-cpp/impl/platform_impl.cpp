@@ -1,8 +1,10 @@
-#include "ag_impl/lock_impl.h"
-#include "ag_impl/mem_impl.h"
+#include "ag_impl/lock_impl.hpp"
+#include "ag_impl/mem_impl.hpp"
 #include <stdlib.h>
 #include <semaphore.h>
 #include <stdatomic.h>
+
+namespace agui {
 
 // ---------------------------------------- mem ----------------------------------------
 void* AgImpl_MemAlloc(ag_size_t size) {
@@ -31,4 +33,6 @@ void AgImpl_Lock(void* lock) {
 
 void AgImpl_Unlock(void* lock) {
     sem_post((sem_t*)lock);
+}
+
 }

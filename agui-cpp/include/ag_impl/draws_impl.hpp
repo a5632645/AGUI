@@ -8,7 +8,7 @@
 #include "agui/ag_color.hpp"
 #include "agui/ag_align.hpp"
 
-namespace agui {
+namespace agui::impl {
 
 enum {
     eAgDrawType_Fill = 0,

@@ -36,6 +36,8 @@ public:
     AgListNode* GetHead() const { return head_; }
     AgListNode* GetTail() const { return tail_; }
 
+    ag_bool Contain(AgListNode& item) const;
+
     // ---------------------------------------- iterator ----------------------------------------
     struct Iterator {
         AgListNode* node_{};

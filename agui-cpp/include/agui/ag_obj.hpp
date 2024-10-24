@@ -23,7 +23,7 @@ public:
     NullablePtr<AgObj> PrevSibling();
     NullablePtr<AgObj> LastChild();
 
-    AgObj(AgObj* parent = nullptr);
+    AgObj(AgObj* parent = nullptr, ag_uint16 type = 0);
 
     void AddChild(AgObj& child);
     void AddChildAtBack(AgObj& child);
@@ -65,10 +65,10 @@ protected:
     AgObj* parent_{}; /* 父节点 */
     AgList childern_;        /* 子节点，注意不会释放内存 */
     struct {
-        ag_bool redraw : 1 = ag_true;     /* 需要重新绘制 */
-        ag_bool invalid : 1 = ag_true;    /* 无效，但不代表需要重新绘制 */
-        ag_bool visiable : 1 = ag_true;   /* 可见性 */
-        ag_bool transpant : 1 = ag_false;  /* 是否是半透明 */
+        ag_bool redraw : 1;     /* 需要重新绘制 */
+        ag_bool invalid : 1;    /* 无效，但不代表需要重新绘制 */
+        ag_bool visiable : 1;   /* 可见性 */
+        ag_bool transpant : 1;  /* 是否是半透明 */
     } flags_;
     AgRect bound_; /* 在父节点空间的位置 */
 };

@@ -9,6 +9,7 @@
 
 namespace agui::impl {
 
+class AgTextDraw;
 class PainterImpl : public AgPainter {
 public:
     PainterImpl();

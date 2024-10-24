@@ -62,8 +62,27 @@ struct NullablePtr {
     constexpr T* operator->() const { return ptr; }
     constexpr bool operator!() const { return !ptr; }
 
+    template<class E>
+    constexpr bool operator==(E* other) const { return ptr == other; }
+
     template<class F>
     void CallIf(F&& f) const { if (ptr) f(*ptr); }
+};
+
+template<>
+struct NullablePtr<void> {
+    void* ptr{};
+    constexpr NullablePtr() = default;
+    constexpr NullablePtr(void* ptr) {}
+
+    constexpr operator void*() const { return ptr; }
+    constexpr bool operator!() const { return !ptr; }
+
+    template<class E>
+    constexpr bool operator==(E* other) const { return ptr == other; }
+
+    template<class F>
+    void CallIf(F&& f) const { if (ptr) f(ptr); }
 };
 
 }

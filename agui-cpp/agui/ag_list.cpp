@@ -109,4 +109,15 @@ void AgList::Append(AgList& other) {
     }
 }
 
+ag_bool AgList::Contain(AgListNode& item) const {
+    AgListNode* node = head_;
+    while (node) {
+        if (node == &item) {
+            return true;
+        }
+        node = node->next_;
+    }
+    return false;
+}
+
 }

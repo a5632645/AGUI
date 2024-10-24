@@ -14,7 +14,7 @@ AgRect AgPainter::GetLocalDrawAera() const {
 }
 
 void AgPainter::SaveState() {
-    PainterData* data = &data[++depth_];
+    PainterData* data = &data_[++depth_];
     data->draw_aera = draw_aera_;
     data->always_redraw = always_redraw_;
 }

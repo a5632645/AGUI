@@ -175,9 +175,7 @@ void AgObj::Draw(AgPainter& painter) {
 }
 
 NullablePtr<AgObj> AgObj::FirstChild() {
-    if (nullptr == childern_.GetHead()) {
-        return nullptr;
-    }
+    return childern_.GetHead()->As<AgObj>();
 }
 
 NullablePtr<AgObj> AgObj::NextSibling() {
@@ -201,7 +199,11 @@ NullablePtr<AgObj> AgObj::LastChild() {
     return childern_.GetTail()->As<AgObj>();
 }
 
-AgObj::AgObj(AgObj* parent) {
+AgObj::AgObj(AgObj* parent, ag_uint16 type) : obj_type_(type) {
+    flags_.redraw = ag_true;
+    flags_.invalid = ag_true;
+    flags_.visiable = ag_true;
+    flags_.transpant = ag_false;
     parent_ = parent;
     if (NULL != parent_) {
         parent_->AddChild(*this);

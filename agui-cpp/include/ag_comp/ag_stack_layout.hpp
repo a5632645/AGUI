@@ -4,51 +4,28 @@
 */
 
 #pragma once
-#include "ag_comp/deps.h"
+#include "ag_comp/deps.hpp"
 
-typedef struct {
-    AgObj obj;
-    AgList stack;
-} AgStackLayout;
+namespace agui {
 
-/**
- * @brief 初始化
- * @param sl 不能为NULL
- */
-void AgStackLayout_Init(AgStackLayout* sl);
+class AgStackLayout : public AgObj {
+public:
+    AgStackLayout(AgObj* parent = nullptr) : AgObj(parent, eAgObjType_StackLayout) {}
 
-/**
- * @brief 入栈
- * @param sl 不能为NULL
- * @param obj 不能与栈中或者正在显示的节点为同一个实例
- */
-void AgStackLayout_Push(AgStackLayout* sl, AgObj* obj);
+    void Push(AgObj& obj);
+    void Push2(AgObj& obj);
+    AgList Push3(AgObj& obj);
+    NullablePtr<AgObj> Pop();
+    NullablePtr<AgObj> Current();
 
-/**
- * @brief 入栈，如果栈中已经存在该实例，则将其取出作为使用
- * @param sl 不能为NULL
- * @param obj 可以为NULL
- */
-void AgStackLayout_Push2(AgStackLayout* sl, AgObj* obj);
+    void Layout() override;
+    void Event(AgEvent& event) override;
+    void Draw(AgPainter& painter) override;
+private:
+    NullablePtr<AgObj> _ChangeObj(AgObj& obj);
+    NullablePtr<AgObj> _ChangeObj(NullablePtr<AgObj> obj);
 
-/**
- * @brief 入栈，如果栈中已经存在该实例，弹出其上方的所有节点
- * @param sl 不能为NULL
- * @param ret 返回的被弹出的节点，可以不初始化，不能为NULL
- * @param obj 可以为NULL
- */
-void AgStackLayout_Push3(AgStackLayout* sl, AgList* ret, AgObj* obj);
+    AgList stack_;
+};
 
-/**
- * @brief 出栈
- * @param sl 不能为NULL
- * @return 可能为NULL
- */
-AgObj* AgStackLayout_Pop(AgStackLayout* sl);
-
-/**
- * @brief 获取正在显示的节点
- * @param sl 不能为NULL
- * @return 可能为NULL
- */
-AgObj* AgStackLayout_Current(AgStackLayout* sl);
+}

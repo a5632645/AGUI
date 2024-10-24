@@ -50,7 +50,7 @@ void AgListView::__Draw_Vertical(AgPainter& painter) {
         .x = 0,
         .y = final_y,
         .w = item_w,
-        .h = bound_.h - final_y
+        .h = static_cast<ag_int16>(bound_.h - final_y)
     };
     delegate_->Background(painter, fill);
 }
@@ -93,7 +93,7 @@ void AgListView::__Draw_Horizontal(AgPainter& painter) {
     AgRect fill = {
         .x = final_x,
         .y = 0,
-        .w = bound_.w - final_x,
+        .w = static_cast<ag_int16>(bound_.w - final_x),
         .h = item_h,
     };
     delegate_->Background(painter, fill);
@@ -219,7 +219,7 @@ void AgListView::Event(AgEvent& event) {
 // ---------------------------------------- public ----------------------------------------
 
 AgListView::AgListView(AgObj* parent)
-    : AgObj(parent) {
+    : AgObj(parent, eAgObjType_ListView) {
     SetModel(nullptr);
 }
 
