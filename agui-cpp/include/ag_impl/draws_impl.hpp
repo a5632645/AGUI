@@ -53,6 +53,7 @@ struct AgTextDraw : public AgDraw {
     const char *text;
     AgColor color;
     ag_uint8 font_id;
+    ag_uint8 height;
 };
 
 struct AgImgDraw : public AgDraw {

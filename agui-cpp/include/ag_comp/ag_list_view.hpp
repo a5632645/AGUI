@@ -29,7 +29,7 @@ class AgListViewDelegate {
 public:
     virtual ~AgListViewDelegate() = default;
     virtual ag_int16 ScrollBarWidth(AgListViewStyle) = 0;
-    virtual void ScrollBar(AgPainter& painter, ag_int16 pixel_start, ag_int16 pixel_end) = 0;
+    virtual void ScrollBar(AgPainter& painter, AgListViewStyle style, ag_int16 pixel_start, ag_int16 length) = 0;
     virtual void Background(AgPainter& painter, const AgRect& draw_aera) = 0;
 };
 
@@ -62,7 +62,7 @@ private:
     inline static class EmptyDelegate : public AgListViewDelegate {
     public:
         ag_int16 ScrollBarWidth(AgListViewStyle style) override { return 0; }
-        void ScrollBar(AgPainter& painter, ag_int16 pixel_start, ag_int16 pixel_end) override {}
+        void ScrollBar(AgPainter& painter, AgListViewStyle style, ag_int16 pixel_start, ag_int16 length) override {}
         void Background(AgPainter& painter, const AgRect& draw_aera) override;
     } s_empty_delegate_;
 

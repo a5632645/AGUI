@@ -28,7 +28,7 @@ void AgListView::__Draw_Vertical(AgPainter& painter) {
             painter.SaveState();
             painter.ModifyCurrDrawAera().x = x;
             painter.ModifyCurrDrawAera().w = w;
-            delegate_->ScrollBar(painter, y, y_end);
+            delegate_->ScrollBar(painter, style_, y, y_end - y);
             painter.RestoreState();
         }
 
@@ -72,7 +72,7 @@ void AgListView::__Draw_Horizontal(AgPainter& painter) {
             painter.SaveState();
             painter.ModifyCurrDrawAera().y = y;
             painter.ModifyCurrDrawAera().h = h;
-            delegate_->ScrollBar(painter, x, x_end);
+            delegate_->ScrollBar(painter, style_, x, x_end - x);
             painter.RestoreState();
         }
 
@@ -201,7 +201,7 @@ void AgListView::_NullModelUpdate() {
 }
 
 void AgListView::Draw(AgPainter& painter) {
-    if (style_ == AgListViewStyle::eAgListViewStyle_Vertical) {
+    if (style_ == AgListViewStyle::eAgListViewStyle_Horizontal) {
         __Draw_Horizontal(painter);
     }
     else {

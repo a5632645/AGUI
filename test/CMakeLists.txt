@@ -6,3 +6,6 @@ target_link_libraries(list_view_test PRIVATE agui)
 
 add_executable(stack_layout_test stack_layout_test.c)
 target_link_libraries(stack_layout_test PRIVATE agui)
+
+add_executable(lv_cpp_test lv_cpp.cpp)
+target_link_libraries(lv_cpp_test PRIVATE agui-cpp)
