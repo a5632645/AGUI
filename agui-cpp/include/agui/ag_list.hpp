@@ -22,8 +22,15 @@ protected:
 
 class AgList final {
 public:
+    // ---------------------------------------- special ----------------------------------------
     constexpr AgList() = default;
+    ~AgList();
+    AgList(const AgList&) = delete;
+    AgList& operator=(const AgList&) = delete;
+    AgList(AgList&& other);
+    AgList& operator=(AgList&& other);
 
+    // ---------------------------------------- operation ----------------------------------------
     void PushBack(AgListNode& item);
     void PushFront(AgListNode& item);
     void Remove(AgListNode& item);
@@ -37,6 +44,7 @@ public:
     AgListNode* GetTail() const { return tail_; }
 
     ag_bool Contain(AgListNode& item) const;
+
 
     // ---------------------------------------- iterator ----------------------------------------
     struct Iterator {

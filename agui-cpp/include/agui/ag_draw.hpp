@@ -5,9 +5,12 @@
 namespace agui {
 
 struct AgDraw {
-    ag_uint32 type;
+private:
+    const ag_uint32 type;
 
+public:
     explicit AgDraw(ag_uint32 type) : type(type) {}
+    ag_uint32 GetType() const { return type; }
 
     template<class T, std::enable_if_t<std::is_base_of_v<AgDraw, T>>* v = nullptr>
     T& As() {

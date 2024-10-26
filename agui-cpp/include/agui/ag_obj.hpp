@@ -40,6 +40,7 @@ public:
     void ReDraw();
     void RedrawRoot();
     void DoLayout();
+    ag_bool NeedDraw() const;
     
     void SetBound(const AgRect& bound);
     void SetBounds(ag_int16 x, ag_int16 y, ag_int16 w, ag_int16 h);

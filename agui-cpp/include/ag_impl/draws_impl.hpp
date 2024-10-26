@@ -20,6 +20,11 @@ enum {
     eAgDrawType_Invert,
 };
 
+struct AgFont {
+    ag_uint8 id;
+    ag_uint8 height;
+};
+
 struct AgFillDraw : public AgDraw {
     AgFillDraw() : AgDraw(eAgDrawType_Fill) {}
     AgRect rect;
@@ -47,7 +52,7 @@ struct AgTextDraw : public AgDraw {
     AgAlignEnum align;
     const char *text;
     AgColor color;
-    ag_int32 font_size;
+    ag_uint8 font_id;
 };
 
 struct AgImgDraw : public AgDraw {

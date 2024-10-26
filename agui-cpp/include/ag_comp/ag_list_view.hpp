@@ -44,6 +44,7 @@ public:
     void SetBeginIdx(ag_int16 idx);
     void Scroll(ag_int16 shift);
     void SetSelectedIdx(ag_int16 idx);
+    ag_int16 GetSelectedIdx() const { return select_idx_; }
     void SetStyle(AgListViewStyle style);
 
     void Draw(AgPainter& painter) override;
@@ -58,7 +59,7 @@ private:
     void _ScrollDown(ag_int16 shift);
     void _NullModelUpdate();
 
-    static class EmptyDelegate : public AgListViewDelegate {
+    inline static class EmptyDelegate : public AgListViewDelegate {
     public:
         ag_int16 ScrollBarWidth(AgListViewStyle style) override { return 0; }
         void ScrollBar(AgPainter& painter, ag_int16 pixel_start, ag_int16 pixel_end) override {}

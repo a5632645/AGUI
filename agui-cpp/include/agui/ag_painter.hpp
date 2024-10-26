@@ -10,7 +10,7 @@ class AgPainter {
 public:
     virtual ~AgPainter() = default;
     // ---------------------------------------- interface ----------------------------------------
-    virtual NullablePtr<void> GetBackend() const = 0;                   /* 获取绘制后端，如u8g2,adfurit等 */
+    virtual NullablePtr<void> GetBackend() = 0;                   /* 获取绘制后端，如u8g2,adfurit等 */
     virtual void CallDraw(const AgDraw& arg) = 0;   /* 绘制东西 */
     virtual void BeginFrame() = 0;                    /* 开始新的绘制 */
     virtual void EndFrame() = 0;                      /* 结束绘制 */

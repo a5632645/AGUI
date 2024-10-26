@@ -120,4 +120,25 @@ ag_bool AgList::Contain(AgListNode& item) const {
     return false;
 }
 
+AgList::~AgList() {
+    RemoveAll([](AgListNode* node){});
+}
+
+AgList::AgList(AgList&& other) {
+    RemoveAll([](AgListNode* node){});
+    head_ = other.head_;
+    tail_ = other.tail_;
+    other.head_ = nullptr;
+    other.tail_ = nullptr;
+}
+
+AgList& AgList::operator=(AgList&& other) {
+    RemoveAll([](AgListNode* node){});
+    head_ = other.head_;
+    tail_ = other.tail_;
+    other.head_ = nullptr;
+    other.tail_ = nullptr;
+    return *this;
+}
+
 }

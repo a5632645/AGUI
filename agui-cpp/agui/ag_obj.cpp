@@ -321,6 +321,10 @@ void AgObj::DoLayout() {
     Layout();
 }
 
+ag_bool AgObj::NeedDraw() const {
+    return flags_.invalid;
+}
+
 void AgObj::SetBound(const AgRect& bound) {
     if (bound_ == bound) {
         return;
