@@ -1,5 +1,6 @@
 #include "painter.hpp"
 #include "ag_comp/ag_list_view.hpp"
+#include <iostream>
 
 class TModel : public agui::AgListModel {
 public:
@@ -12,7 +13,7 @@ public:
     }
 
     void Draw(agui::AgPainter& painter, int16_t idx, agui::ag_bool selected) override {
-        agui::impl::AgFillDraw draw;
+        FillDraw draw;
         draw.rect = painter.GetLocalDrawAera();
         draw.color = selected ? agui::colors::kWhite : agui::colors::kBlack;
         painter.CallDraw(draw);
@@ -27,21 +28,21 @@ class TDelegate : public agui::AgListViewDelegate {
 public:
     int16_t ScrollBarWidth(agui::AgListViewStyle style) override { return 8; }
 
-    void ScrollBar(agui::AgPainter& painter, AgListViewStyle style, int16_t pixel_start, int16_t pixel_end) override {
+    void ScrollBar(agui::AgPainter& painter, agui::AgListViewStyle style, int16_t pixel_start, int16_t pixel_end) override {
         {
-            agui::impl::AgFillDraw draw;
+            FillDraw draw;
             draw.rect = painter.GetLocalDrawAera();
             draw.color = agui::colors::kBlack;
             painter.CallDraw(draw);
         }
         {
-            agui::impl::AgRectDraw draw;
+            RectDraw draw;
             draw.rect = painter.GetLocalDrawAera();
             draw.color = agui::colors::kWhite;
             painter.CallDraw(draw);
         }
         {
-            agui::impl::AgFillDraw draw;
+            FillDraw draw;
             draw.rect = painter.GetLocalDrawAera();
             draw.rect.y = pixel_start;
             draw.rect.h = pixel_end - pixel_start;
@@ -51,7 +52,7 @@ public:
     }
 
     void Background(agui::AgPainter& painter, const agui::AgRect& draw_aera) override {
-        agui::impl::AgFillDraw draw;
+        FillDraw draw;
         draw.rect = draw_aera;
         draw.color = agui::colors::kBlack;
         painter.CallDraw(draw);
@@ -59,7 +60,7 @@ public:
 };
 
 int main() {
-    AgRect screen = {0, 0, 800, 600};
+    agui::AgRect screen = {0, 0, 800, 600};
     InitWindow(800, 600, "raylib [examples] example - list view");
     SetTargetFPS(60);
 
@@ -83,6 +84,7 @@ int main() {
         }
         if (IsKeyPressed(KEY_DOWN)) {
             lv.Scroll(1);
+            std::cout << lv.GetSelectedIdx() << std::endl;
         }
 
         BeginDrawing();

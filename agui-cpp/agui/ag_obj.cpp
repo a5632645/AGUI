@@ -1,6 +1,7 @@
 #include "agui/ag_obj.hpp"
 #include "ag_impl/ag_cfg.hpp"
-#include "ag_impl/default_impl.hpp"
+#include "ag_impl/ag_impl.hpp"
+#include "agui/ag_color.hpp"
 
 namespace agui {
 
@@ -46,7 +47,7 @@ static AgColor AgDbg_RandomColor() {
 void AgObj::_DrawDbgFrame(AgPainter& painter) {
     AgRect rect = GetLocalBound();
     AgColor color = AgDbg_RandomColor();
-    __DrawColorFrame(painter, rect, color);
+    impl::AgDrawColorFrame(painter, rect, color);
 }
 #else
 void AgObj::_DrawDbgFrame(AgPainter& painter) {}
@@ -171,7 +172,7 @@ void AgObj::DrawObjInObj(AgPainter& painter) {
 
 // ---------------------------------------- public ----------------------------------------
 void AgObj::Draw(AgPainter& painter) {
-    __EmptyObjDraw(*this, painter);
+    impl::AgEmptyObjDraw(*this, painter);
 }
 
 AgObj::~AgObj() {

@@ -1,10 +1,7 @@
 #pragma once
 #include "agui/ag_painter.hpp"
-#include "ag_impl/draws_impl.hpp"
+#include "draws.hpp"
 #include "raylib.h"
-
-using namespace agui;
-using namespace agui::impl;
 
 static Color ColorTransfrom(agui::AgColor c) {
     return Color {
@@ -15,9 +12,9 @@ static Color ColorTransfrom(agui::AgColor c) {
     };
 }
 
-class TestPainter : public AgPainter {
+class TestPainter : public agui::AgPainter {
 public:
-    NullablePtr<void> GetBackend() override {
+    agui::NullablePtr<void> GetBackend() override {
         return nullptr;
     }
 
@@ -25,12 +22,12 @@ public:
         return texture_;
     }
 
-    void CallDraw(const AgDraw& arg) override {
-        ag_int16 x = draw_aera_.x;
-        ag_int16 y = draw_aera_.y;
+    void CallDraw(const agui::AgDraw& arg) override {
+        agui::ag_int16 x = draw_aera_.x;
+        agui::ag_int16 y = draw_aera_.y;
         switch (arg.GetType()) {
         case eAgDrawType_Fill: {
-            auto& d = arg.As<AgFillDraw>();
+            auto& d = arg.As<FillDraw>();
             Color c = ColorTransfrom(d.color);
             DrawRectangle(x + d.rect.x,
                         y + d.rect.y,
@@ -44,7 +41,7 @@ public:
         }
         break;
         case eAgDrawType_Line: {
-            auto& d = arg.As<AgLineDraw>();
+            auto& d = arg.As<LineDraw>();
             Color c = ColorTransfrom(d.color);
             DrawLine(x + d.x1,
                     y + d.y1,
@@ -54,7 +51,7 @@ public:
         }
         break;
         case eAgDrawType_Pixel: {
-            auto&d = arg.As<AgPixelDraw>();
+            auto&d = arg.As<PixelDraw>();
             Color c = ColorTransfrom(d.color);
             DrawPixel(x + d.x,
                     y + d.y,
@@ -62,7 +59,7 @@ public:
         }
         break;
         case eAgDrawType_Rect: {
-            auto& d = arg.As<AgRectDraw>();
+            auto& d = arg.As<RectDraw>();
             Color c = ColorTransfrom(d.color);
             DrawRectangleLines(x + d.rect.x,
                             y + d.rect.y,
@@ -72,35 +69,35 @@ public:
         }
         break;
         case eAgDrawType_Text: {
-            auto& d = arg.As<AgTextDraw>();
+            auto& d = arg.As<TextDraw>();
                 Color c = ColorTransfrom(d.color);
-                ag_int16 text_width = MeasureText(d.text, d.height);
-                ag_int16 text_height = d.height;
-                ag_int16 x = d.rect.x + draw_aera_.x;
-                ag_int16 y = d.rect.y + draw_aera_.y;
+                agui::ag_int16 text_width = MeasureText(d.text, d.height);
+                agui::ag_int16 text_height = d.height;
+                agui::ag_int16 x = d.rect.x + draw_aera_.x;
+                agui::ag_int16 y = d.rect.y + draw_aera_.y;
 
-                AgAlignEnum x_align = AGUI_X_ALIGN(d.align);
+                agui::AgAlignEnum x_align = AGUI_X_ALIGN(d.align);
                 switch (x_align) {
-                case eAgAlign_XLeft:
+                case agui::AgAlignEnum::eAgAlign_XLeft:
                     break;
-                case eAgAlign_XCenter:
+                case agui::AgAlignEnum::eAgAlign_XCenter:
                     x += (d.rect.w - text_width) / 2;
                     break;
-                case eAgAlign_XRight:
+                case agui::AgAlignEnum::eAgAlign_XRight:
                     x += d.rect.w - text_width;
                     break;
                 default:
                     break;
                 }
 
-                AgAlignEnum y_align = AGUI_Y_ALIGN(d.align);
+                agui::AgAlignEnum y_align = AGUI_Y_ALIGN(d.align);
                 switch (y_align) {
-                case eAgAlign_YTop:
+                case agui::AgAlignEnum::eAgAlign_YTop:
                     break;
-                case eAgAlign_YCenter:
+                case agui::AgAlignEnum::eAgAlign_YCenter:
                     y += (d.rect.h - text_height) / 2;
                     break;
-                case eAgAlign_YBottom:
+                case agui::AgAlignEnum::eAgAlign_YBottom:
                     y += d.rect.h - text_height;
                     break;
                 default:

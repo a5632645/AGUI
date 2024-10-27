@@ -6,6 +6,7 @@
 #pragma once
 #include "agui/ag_types.hpp"
 #include "agui/ag_list.hpp"
+#include "ag_impl/ag_impl.hpp"
 #include <functional>
 
 namespace agui {
@@ -28,7 +29,7 @@ public:
     void Enqueue(AgMqCallObj* obj); // will be deleted in CallPending
 
 private:
-    void* lock_;
+    impl::ag_lock_t lock_;
     AgList pending_;
     AgList swap_;
 };

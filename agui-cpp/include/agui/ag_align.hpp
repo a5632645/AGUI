@@ -16,7 +16,7 @@ enum AgAlignEnum : ag_uint8 {
     eAgAlign_None = 0,
 };
 
-#define AGUI_X_ALIGN(x) (static_cast<AgAlignEnum>((x) & 0b11))
-#define AGUI_Y_ALIGN(y) (static_cast<AgAlignEnum>(((y) & 0b1100)))
+static constexpr AgAlignEnum AGUI_X_ALIGN(ag_uint8 x) { return static_cast<AgAlignEnum>(x & 0b11); }
+static constexpr AgAlignEnum AGUI_Y_ALIGN(ag_uint8 y) { return static_cast<AgAlignEnum>(((y) & 0b1100)); }
 
 }

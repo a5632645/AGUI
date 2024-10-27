@@ -1,5 +1,5 @@
 #include "ag_comp/ag_list_view.hpp"
-#include "ag_impl/default_impl.hpp"
+#include "ag_impl/ag_impl.hpp"
 
 namespace agui {
 
@@ -7,7 +7,7 @@ namespace agui {
 void AgListView::EmptyDelegate::Background(AgPainter& painter, const AgRect& draw_aera) {
     AgObj obj;
     obj.SetBound(draw_aera);
-    __EmptyObjDraw(obj, painter);
+    impl::AgEmptyObjDraw(obj, painter);
 }
 
 // ---------------------------------------- impl ----------------------------------------

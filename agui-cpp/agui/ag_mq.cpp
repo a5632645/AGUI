@@ -1,29 +1,28 @@
 #include "agui/ag_mq.hpp"
-#include "ag_impl/mem_impl.hpp"
-#include "ag_impl/lock_impl.hpp"
+#include "ag_impl/ag_impl.hpp"
 
 namespace agui {
 
 // ---------------------------------------- lock_guard ----------------------------------------
 struct LockGuard {
-    void* lock_;
-    LockGuard(void* lock) : lock_(lock) {
-        AgImpl_Lock(lock_);
+    impl::ag_lock_t& lock_;
+    LockGuard(impl::ag_lock_t& lock) : lock_(lock) {
+        impl::AgImpl_Lock(lock_);
     }
     ~LockGuard() {
-        AgImpl_Unlock(lock_);
+        impl::AgImpl_Unlock(lock_);
     }
 };
 
 // ---------------------------------------- AgMq ----------------------------------------
 
 AgMq::AgMq() {
-    lock_ = AgImpl_LockCreate();
+    impl::AgImpl_LockInit(lock_);
 }
 
 AgMq::~AgMq() {
     CallPending();
-    AgImpl_LockDestroy(lock_);
+    impl::AgImpl_LockDestroy(lock_);
 }
 
 void AgMq::Enqueue(void(*call)(void*), void* arg) {
