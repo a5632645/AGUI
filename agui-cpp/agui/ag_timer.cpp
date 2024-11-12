@@ -3,18 +3,18 @@
 namespace agui {
 
 void AgTimer::AddTimer(AgTimer& timer2) {
-    if (NULL != next_) {
-        next_->prev_ = &timer2;
+    if (nullptr != AgTimer::AgListNode::next_) {
+        AgTimer::AgListNode::next_->AgTimer::AgListNode::prev_ = &timer2;
     }
-    timer2.next_ = next_;
-    timer2.prev_ = this;
-    next_ = &timer2;
+    timer2.AgTimer::AgListNode::next_ = AgTimer::AgListNode::next_;
+    timer2.AgTimer::AgListNode::prev_ = this;
+    AgTimer::AgListNode::next_ = &timer2;
 }
 
 void AgTimer::Tick(ag_uint32 escape) {
     AgListNode* node = this;
-    while (NULL != node) {
-        AgListNode* next = node->next_;
+    while (nullptr != node) {
+        AgListNode* next = node->AgTimer::AgListNode::next_;
         AgTimer* t = next->As<AgTimer>();
         if (ag_true == t->running_) {
             t->count_ += escape;
@@ -33,16 +33,16 @@ void AgTimer::Tick(ag_uint32 escape) {
 }
 
 void AgTimer::Remove() {
-    AgListNode* prev = prev_;
-    AgListNode* next = next_;
-    if (NULL != prev) {
-        prev->next_ = next;
+    AgListNode* prev = AgTimer::AgListNode::prev_;
+    AgListNode* next = AgTimer::AgListNode::next_;
+    if (nullptr != prev) {
+        prev->AgTimer::AgListNode::next_ = next;
     }
-    if (NULL != next) {
-        next->prev_ = prev;
+    if (nullptr != next) {
+        next->AgTimer::AgListNode::prev_ = prev;
     }
-    prev_ = NULL;
-    next_ = NULL;
+    AgTimer::AgListNode::prev_ = nullptr;
+    AgTimer::AgListNode::next_ = nullptr;
 }
 
 void AgTimer::Pause() {
@@ -55,12 +55,26 @@ void AgTimer::Resume() {
 
 void AgTimer::Destory() {
     AgListNode* node = this;
-    while (NULL != node) {
-        AgListNode* next = node->next_;
-        node->prev_ = NULL;
-        node->next_ = NULL;
+    while (nullptr != node) {
+        AgListNode* next = node->AgTimer::AgListNode::next_;
+        node->AgTimer::AgListNode::prev_ = nullptr;
+        node->AgTimer::AgListNode::next_ = nullptr;
         node = next;
     }
+}
+
+NullablePtr<AgTimer> AgTimer::NextTimer() {
+    if (nullptr == AgTimer::AgListNode::next_) {
+        return nullptr;
+    }
+    return AgTimer::AgListNode::next_->As<AgTimer>();
+}
+
+NullablePtr<AgTimer> AgTimer::PrevTimer() {
+    if (nullptr == AgTimer::AgListNode::prev_) {
+        return nullptr;
+    }
+    return AgTimer::AgListNode::prev_->As<AgTimer>();
 }
 
 }

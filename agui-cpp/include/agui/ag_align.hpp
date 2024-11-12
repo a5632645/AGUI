@@ -3,20 +3,26 @@
 
 namespace agui {
 
-enum AgAlignEnum : ag_uint8 {
-    eAgAlign_XLeft = 0b01,
-    eAgAlign_XCenter = 0b10,
-    eAgAlign_XRight = 0b11,
+enum class AgAlignEnum : ag_uint8 {
+    kXLeft = 0b01,
+    kXCenter = 0b10,
+    kXRight = 0b11,
 
-    eAgAlign_YTop = 0b0100,
-    eAgAlign_YCenter = 0b1000,
-    eAgAlign_YBottom = 0b1100,
+    kYTop = 0b0100,
+    kYCenter = 0b1000,
+    kYBottom = 0b1100,
 
-    eAgAlign_Center = eAgAlign_XCenter | eAgAlign_YCenter,
+    kCenter = 0b1010,
     eAgAlign_None = 0,
 };
 
-static constexpr AgAlignEnum AGUI_X_ALIGN(ag_uint8 x) { return static_cast<AgAlignEnum>(x & 0b11); }
-static constexpr AgAlignEnum AGUI_Y_ALIGN(ag_uint8 y) { return static_cast<AgAlignEnum>(((y) & 0b1100)); }
+static constexpr AgAlignEnum AGUI_X_ALIGN(AgAlignEnum xx) {
+    auto x = static_cast<ag_uint8>(xx);
+    return static_cast<AgAlignEnum>(x & 0b11);
+}
+static constexpr AgAlignEnum AGUI_Y_ALIGN(AgAlignEnum yy) {
+    auto y = static_cast<ag_uint8>(yy);
+    return static_cast<AgAlignEnum>(((y) & 0b1100)); 
+}
 
 }

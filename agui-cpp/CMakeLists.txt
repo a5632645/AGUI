@@ -1,5 +1,5 @@
 file(GLOB_RECURSE agui_sources "*.cpp" "*.hpp")
 add_library(agui-cpp STATIC ${agui_sources})
 target_include_directories(agui-cpp PUBLIC include)
-set(TARGET agui-cpp PROPERTY CXX_STANDARD 20)
+#set(TARGET agui-cpp PROPERTY CXX_STANDARD 20)
 target_link_libraries(agui-cpp PUBLIC raylib)

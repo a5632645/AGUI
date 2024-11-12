@@ -4,10 +4,7 @@
 
 namespace agui {
 
-struct AgDraw {
-private:
-    const ag_uint32 type;
-
+class AgDraw {
 public:
     explicit AgDraw(ag_uint32 type) : type(type) {}
     ag_uint32 GetType() const { return type; }
@@ -23,6 +20,8 @@ public:
     }
 
     virtual ~AgDraw() = default;
+private:
+    const ag_uint32 type;
 };
 
 }

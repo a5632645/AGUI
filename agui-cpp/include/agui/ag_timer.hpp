@@ -21,6 +21,9 @@ public:
     void Pause();
     void Resume();
     void Destory();
+
+    NullablePtr<AgTimer> NextTimer();
+    NullablePtr<AgTimer> PrevTimer();
 private:
     ag_uint32 count_{};
     ag_uint32 period_{};

@@ -4,7 +4,7 @@
 */
 
 #pragma once
-#include "ag_comp/deps.hpp"
+#include "agui/ag_obj.hpp"
 
 namespace agui {
 
@@ -23,6 +23,9 @@ public:
     virtual ag_int16 Length(AgListViewStyle style, ag_int16 idx) = 0;
     virtual void Draw(AgPainter& painter, ag_int16 idx, ag_bool selected) = 0;
     virtual void Event(AgListView& lv, AgEvent& event, ag_int16 idx) = 0;
+protected:
+    friend class AgListView;
+    NullablePtr<AgListView> list_view_;
 };
 
 class AgListViewDelegate {
@@ -36,6 +39,7 @@ public:
 class AgListView : public AgObj {
 public:
     AgListView(AgObj* parent = nullptr);
+    ~AgListView() override;
 
     void SetModel(AgListModel* model);
     void SetDelegate(AgListViewDelegate* delegate);

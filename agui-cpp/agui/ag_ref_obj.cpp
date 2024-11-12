@@ -27,14 +27,52 @@ AgMasterRefObj::AgMasterRefObj() {
 }
 
 AgMasterRefObj::~AgMasterRefObj() {
+    DestroyMaster();
+}
+
+AgMasterRefObj::AgMasterRefObj(AgMasterRefObj&& other) noexcept {
+    DestroyMaster();
+    ptr = other.ptr;
+    other.ptr = nullptr;
+}
+
+AgMasterRefObj& AgMasterRefObj::operator=(AgMasterRefObj&& other) noexcept {
+    DestroyMaster();
+    ptr = other.ptr;
+    other.ptr = nullptr;
+    return *this;
+}
+
+void AgMasterRefObj::DestroyMaster() {
     RefCounter* rc = (RefCounter*)ptr;
     impl::ag_atomic_bool_store(rc->master_dead, ag_true);
     _DecreseCount(rc);
 }
 
+AgSlaveRefObj::AgSlaveRefObj(AgSlaveRefObj&& other) noexcept {
+    DestroySlave();
+    ptr = other.ptr;
+    other.ptr = nullptr;
+}
+
+AgSlaveRefObj& AgSlaveRefObj::operator=(AgSlaveRefObj&& other) noexcept {
+    DestroySlave();
+    ptr = other.ptr;
+    other.ptr = nullptr;
+    return *this;
+}
+
 ag_bool AgSlaveRefObj::IsMasterDead() const {
+    if (nullptr == ptr) {
+        return ag_true;
+    }
     RefCounter* rc = (RefCounter*)ptr;
     return impl::ag_atomic_bool_load(rc->master_dead);
+}
+
+void AgSlaveRefObj::DestroySlave() {
+    RefCounter* rc = (RefCounter*)ptr;
+    _DecreseCount(rc);
 }
 
 AgSlaveRefObj::AgSlaveRefObj(AgMasterRefObj& master) {
@@ -44,8 +82,7 @@ AgSlaveRefObj::AgSlaveRefObj(AgMasterRefObj& master) {
 }
 
 AgSlaveRefObj::~AgSlaveRefObj() {
-    RefCounter* rc = (RefCounter*)ptr;
-    _DecreseCount(rc);
+    DestroySlave();
 }
 
 }

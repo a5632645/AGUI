@@ -76,14 +76,16 @@ public:
                 agui::ag_int16 x = d.rect.x + draw_aera_.x;
                 agui::ag_int16 y = d.rect.y + draw_aera_.y;
 
+                using enum agui::AgAlignEnum;
+
                 agui::AgAlignEnum x_align = AGUI_X_ALIGN(d.align);
                 switch (x_align) {
-                case agui::AgAlignEnum::eAgAlign_XLeft:
+                case agui::AgAlignEnum::kXLeft:
                     break;
-                case agui::AgAlignEnum::eAgAlign_XCenter:
+                case agui::AgAlignEnum::kXCenter:
                     x += (d.rect.w - text_width) / 2;
                     break;
-                case agui::AgAlignEnum::eAgAlign_XRight:
+                case agui::AgAlignEnum::kXRight:
                     x += d.rect.w - text_width;
                     break;
                 default:
@@ -92,12 +94,12 @@ public:
 
                 agui::AgAlignEnum y_align = AGUI_Y_ALIGN(d.align);
                 switch (y_align) {
-                case agui::AgAlignEnum::eAgAlign_YTop:
+                case agui::AgAlignEnum::kYTop:
                     break;
-                case agui::AgAlignEnum::eAgAlign_YCenter:
+                case agui::AgAlignEnum::kYCenter:
                     y += (d.rect.h - text_height) / 2;
                     break;
-                case agui::AgAlignEnum::eAgAlign_YBottom:
+                case agui::AgAlignEnum::kYBottom:
                     y += d.rect.h - text_height;
                     break;
                 default:

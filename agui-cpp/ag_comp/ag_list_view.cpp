@@ -219,12 +219,22 @@ void AgListView::Event(AgEvent& event) {
 // ---------------------------------------- public ----------------------------------------
 
 AgListView::AgListView(AgObj* parent)
-    : AgObj(parent, eAgObjType_ListView) {
+    : AgObj(parent) {
     SetModel(nullptr);
 }
 
+AgListView::~AgListView() {
+    if (nullptr != model_) {
+        model_->list_view_ = nullptr;
+    }
+}
+
 void AgListView::SetModel(AgListModel* model) {
+    if (nullptr != model_) {
+        model_->list_view_ = nullptr;
+    }
     model_ = model;
+    model_->list_view_ = this;
     Update();
 }
 

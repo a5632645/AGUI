@@ -4,13 +4,13 @@
 */
 
 #pragma once
-#include "ag_comp/deps.hpp"
+#include "agui/ag_obj.hpp"
 
 namespace agui {
 
 class AgStackLayout : public AgObj {
 public:
-    AgStackLayout(AgObj* parent = nullptr) : AgObj(parent, eAgObjType_StackLayout) {}
+    AgStackLayout(AgObj* parent = nullptr) : AgObj(parent) {}
 
     void Push(AgObj& obj);
     void Push2(AgObj& obj);

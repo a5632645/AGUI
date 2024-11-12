@@ -23,7 +23,7 @@ public:
     NullablePtr<AgObj> PrevSibling();
     NullablePtr<AgObj> LastChild();
 
-    AgObj(AgObj* parent = nullptr, ag_uint16 type = 0);
+    AgObj(AgObj* parent = nullptr);
 
     void AddChild(AgObj& child);
     void AddChildAtBack(AgObj& child);
@@ -58,11 +58,9 @@ public:
     void FastLayout(AgAlignEnum align);
 protected:
     void _CalcSingleBound();
-    void _DrawDbgFrame(AgPainter& painter);
     void _ReDraw();
-    void _PopUpRedraw();
+    void _PopUpRedraw(const AgRect& rect);
 
-    ag_uint16 obj_type_{};     /* 节点类型,0=AgObj */
     AgObj* parent_{}; /* 父节点 */
     AgList childern_;        /* 子节点，注意不会释放内存 */
     struct {

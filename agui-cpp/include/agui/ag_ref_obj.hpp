@@ -12,7 +12,14 @@ class AgMasterRefObj {
 public:
     AgMasterRefObj();
     ~AgMasterRefObj();
+
+    AgMasterRefObj(const AgMasterRefObj&) = delete;
+    AgMasterRefObj& operator=(const AgMasterRefObj&) = delete;
+    AgMasterRefObj(AgMasterRefObj&&) noexcept;
+    AgMasterRefObj& operator=(AgMasterRefObj&&) noexcept;
 private:
+    void DestroyMaster();
+
     friend class AgSlaveRefObj;
     void* ptr{};
 };
@@ -22,8 +29,15 @@ public:
     AgSlaveRefObj(AgMasterRefObj& master);
     ~AgSlaveRefObj();
 
+    AgSlaveRefObj(const AgSlaveRefObj&) = delete;
+    AgSlaveRefObj& operator=(const AgSlaveRefObj&) = delete;
+    AgSlaveRefObj(AgSlaveRefObj&&) noexcept;
+    AgSlaveRefObj& operator=(AgSlaveRefObj&&) noexcept;
+
     ag_bool IsMasterDead() const;
 private:
+    void DestroySlave();
+
     void* ptr{};
 };
 
