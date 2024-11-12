@@ -340,7 +340,7 @@ void AgObj::SendEvent(AgEvent& event) {
     AgObj* obj = this;
     while (nullptr != obj && ag_false == event.handled) {
         AgObj* parent = parent_;
-        parent->Event(event);
+        Event(event);
         obj = parent;
     }
 }
@@ -383,6 +383,33 @@ void AgObj::FastLayout(AgAlignEnum align) {
     default:
         break;
     }
+}
+
+NullablePtr<AgObj> AgObj::FindObjById(uint16_t id, bool allow_child) {
+    if (id == id_) {
+        return this;
+    }
+    auto it = FirstChild();
+    if (!it) {
+        return nullptr;
+    }
+    while (it) {
+        if (it->id_ == id) {
+            return it;
+        }
+        else if (allow_child) {
+            return it->FindObjById(id, allow_child);
+        }
+        it = it->NextSibling();
+    }
+}
+
+AgObj& AgObj::FindRoot() {
+    AgObj* obj = this;
+    while (obj->parent_) {
+        obj = obj->parent_;
+    }
+    return *obj;
 }
 
 }

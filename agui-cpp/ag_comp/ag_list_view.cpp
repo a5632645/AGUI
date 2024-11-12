@@ -16,7 +16,7 @@ void AgListView::__Draw_Vertical(AgPainter& painter) {
     ag_int16 item_w = bound_.w;
     
     if (NULL != model_) {
-        ag_int16 num_items = model_->Count();
+        ag_int16 num_items = model_->CellCount();
         if (display_count_ < num_items) {
             ag_int16 w = delegate_->ScrollBarWidth(style_);
             item_w -= w;
@@ -36,9 +36,9 @@ void AgListView::__Draw_Vertical(AgPainter& painter) {
         painter.ModifyCurrDrawAera().w = item_w;
         for (ag_int16 i = 0; i < display_count_; ++i) {
             ag_int16 idx = begin_idx_ + i;
-            ag_int16 h = model_->Length(style_, idx);
+            ag_int16 h = model_->CellLength(style_, idx);
             painter.ModifyCurrDrawAera().h = h;
-            model_->Draw(painter, idx, select_idx_ == idx);
+            model_->DrawCell(painter, idx, select_idx_ == idx);
             painter.ModifyCurrDrawAera().y += h;
         }
         final_y = painter.ModifyCurrDrawAera().y;
@@ -60,7 +60,7 @@ void AgListView::__Draw_Horizontal(AgPainter& painter) {
     ag_int16 item_h = bound_.h;
     
     if (NULL != model_) {
-        ag_int16 num_items = model_->Count();
+        ag_int16 num_items = model_->CellCount();
         if (display_count_ < num_items) {
             ag_int16 h = delegate_->ScrollBarWidth(style_);
             item_h -= h;
@@ -80,9 +80,9 @@ void AgListView::__Draw_Horizontal(AgPainter& painter) {
         painter.ModifyCurrDrawAera().h = item_h;
         for (ag_int16 i = 0; i < display_count_; ++i) {
             ag_int16 idx = begin_idx_ + i;
-            ag_int16 w = model_->Length(style_, idx);
+            ag_int16 w = model_->CellLength(style_, idx);
             painter.ModifyCurrDrawAera().w = w;
-            model_->Draw(painter, idx, select_idx_ == idx);
+            model_->DrawCell(painter, idx, select_idx_ == idx);
             painter.ModifyCurrDrawAera().x += w;
         }
         final_x = painter.ModifyCurrDrawAera().x;
@@ -120,14 +120,14 @@ ag_int16 AgListView::_GetHowManyItems(ag_int16 idx, ag_bool is_down) {
 
     ag_int16 y = 0;
     ag_int32 count = 0;
-    ag_int32 num_items = model_->Count();
+    ag_int32 num_items = model_->CellCount();
     
     if (ag_true == is_down) {
         for (;;) {
             if (idx >= num_items) {
                 return count;
             }
-            y += model_->Length(style_, idx++);
+            y += model_->CellLength(style_, idx++);
             if (y > h) {
                 return count;
             }
@@ -139,7 +139,7 @@ ag_int16 AgListView::_GetHowManyItems(ag_int16 idx, ag_bool is_down) {
             if (idx < 0) {
                 return count;
             }
-            y += model_->Length(style_, idx--);
+            y += model_->CellLength(style_, idx--);
             if (y > h) {
                 return count;
             }
@@ -149,7 +149,7 @@ ag_int16 AgListView::_GetHowManyItems(ag_int16 idx, ag_bool is_down) {
 }
 
 void AgListView::_SetEndIdx(ag_int16 idx) {
-    idx = AGUI_MIN(idx, model_->Count() - 1);
+    idx = AGUI_MIN(idx, model_->CellCount() - 1);
     idx = AGUI_MAX(idx, 0);
     /* 在调用此处时一定是有效的model */
     display_count_ = _GetHowManyItems(idx, ag_false);
@@ -162,7 +162,7 @@ void AgListView::_SetEndIdx(ag_int16 idx) {
 
 void AgListView::_ScrollUp(ag_int16 shift) {
     ag_int16 new_select = select_idx_ - shift;
-    new_select = AGUI_MIN(new_select, model_->Count() - 1);
+    new_select = AGUI_MIN(new_select, model_->CellCount() - 1);
     new_select = AGUI_MAX(new_select, 0);
     ag_int16 win_begin = begin_idx_;
     if (new_select < win_begin) {
@@ -213,7 +213,7 @@ void AgListView::Event(AgEvent& event) {
     if (NULL == model_) {
         return;
     }
-    model_->Event(*this, event, select_idx_);
+    model_->EventCell(event, select_idx_);
 }
 
 // ---------------------------------------- public ----------------------------------------
@@ -234,7 +234,9 @@ void AgListView::SetModel(AgListModel* model) {
         model_->list_view_ = nullptr;
     }
     model_ = model;
-    model_->list_view_ = this;
+    if (nullptr != model_) {
+        model_->list_view_ = nullptr;
+    }
     Update();
 }
 
@@ -265,7 +267,7 @@ void AgListView::Update() {
         return;
     }
 
-    ag_int16 num_items = model_->Count();
+    ag_int16 num_items = model_->CellCount();
     if (num_items <= begin_idx_ + display_count_) { /* 比当前更小 */
         ag_int16 new_end = num_items - 1;
         new_end = AGUI_MAX(new_end, 0);
@@ -285,7 +287,7 @@ void AgListView::SetBeginIdx(ag_int16 idx) {
     }
 
     ag_int16 old_begin = begin_idx_;
-    idx = AGUI_MIN(idx, model_->Count() - 1);
+    idx = AGUI_MIN(idx, model_->CellCount() - 1);
     idx = AGUI_MAX(idx, 0);
     display_count_ = _GetHowManyItems(idx, ag_true);
     begin_idx_ = idx;

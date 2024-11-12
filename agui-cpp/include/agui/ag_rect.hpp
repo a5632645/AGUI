@@ -46,6 +46,17 @@ struct AgRect {
         w += dx * 2;
         h += dy * 2;
     }
+
+    constexpr AgRect WithHeight(ag_int16 h_) {
+        auto r = *this;
+        r.h = h_;
+        return r;
+    }
+
+    constexpr void Translate(ag_int16 dx, ag_int16 dy) {
+        x += dx;
+        y += dy;
+    }
 };
 
 }

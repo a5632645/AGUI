@@ -56,6 +56,10 @@ public:
     void SendEvent(AgEvent& event);
 
     void FastLayout(AgAlignEnum align);
+
+    void SetId(uint16_t id) { id_ = id; }
+    NullablePtr<AgObj> FindObjById(uint16_t id, bool allow_child);
+    AgObj& FindRoot();
 protected:
     void _CalcSingleBound();
     void _ReDraw();
@@ -70,6 +74,7 @@ protected:
         ag_bool transpant : 1;  /* 是否是半透明 */
     } flags_;
     AgRect bound_; /* 在父节点空间的位置 */
+    uint16_t id_{ 0xffff };
 };
 
 }

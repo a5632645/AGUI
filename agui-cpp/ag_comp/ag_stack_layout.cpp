@@ -3,7 +3,7 @@
 namespace agui {
 
 // ---------------------------------------- private ----------------------------------------
-NullablePtr<AgObj> AgStackLayout::_ChangeObj(AgObj& obj) {
+NullablePtr<AgObj> AgStackLayout::Exchange(AgObj& obj) {
     auto curr = Current();
     if (curr) {
         curr->LeaveParent();
@@ -14,7 +14,7 @@ NullablePtr<AgObj> AgStackLayout::_ChangeObj(AgObj& obj) {
     return curr;
 }
 
-NullablePtr<AgObj> AgStackLayout::_ChangeObj(NullablePtr<AgObj> obj) {
+NullablePtr<AgObj> AgStackLayout::Exchange(NullablePtr<AgObj> obj) {
     if (!obj) {
         if (childern_.IsEmpty()) {
             return nullptr;
@@ -25,7 +25,7 @@ NullablePtr<AgObj> AgStackLayout::_ChangeObj(NullablePtr<AgObj> obj) {
             return ret;
         }
     }
-    return _ChangeObj(*obj);
+    return Exchange(*obj);
 }
 
 // ---------------------------------------- impl ----------------------------------------
@@ -43,20 +43,13 @@ void AgStackLayout::Event(AgEvent& event) {
     }
 }
 
-void AgStackLayout::Draw(AgPainter& painter) {
-    auto curr = Current();
-    if (curr) {
-        curr->Draw(painter);
-    }
-}
-
 // ---------------------------------------- public ----------------------------------------
 
 void AgStackLayout::Push(AgObj& obj) {
     if (&obj == Current().ptr) {
         return;
     }
-    auto old = _ChangeObj(obj);
+    auto old = Exchange(obj);
     if (old) {
         stack_.PushBack(*old);
     }
@@ -91,7 +84,7 @@ AgList AgStackLayout::Push3(AgObj& obj) {
     /* 找到，从栈中删除 */
     AgList ret = stack_.Cut(obj);
     ret.PopFront();
-    auto old = _ChangeObj(obj);
+    auto old = Exchange(obj);
     if (NULL != old) {
         Push(*old->As<AgObj>());
     }
@@ -102,10 +95,10 @@ AgList AgStackLayout::Push3(AgObj& obj) {
 NullablePtr<AgObj> AgStackLayout::Pop() {
     auto replace = stack_.PopBack();
     if (replace) {
-        return _ChangeObj(*replace->As<AgObj>());
+        return Exchange(*replace->As<AgObj>());
     }
     else {
-        return _ChangeObj(nullptr);
+        return Exchange(nullptr);
     }
 }
 

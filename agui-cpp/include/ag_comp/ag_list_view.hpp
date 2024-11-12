@@ -11,19 +11,23 @@ namespace agui {
 // ---------------------------------------- view ----------------------------------------
 
 enum class AgListViewStyle : ag_uint8 {
-    eAgListViewStyle_Horizontal = 0,
-    eAgListViewStyle_Vertical
+    kHorizontal = 0,
+    kVertical
 };
 
 class AgListView;
 class AgListModel {
 public:
     virtual ~AgListModel() = default;
-    virtual ag_int16 Count() = 0;
-    virtual ag_int16 Length(AgListViewStyle style, ag_int16 idx) = 0;
-    virtual void Draw(AgPainter& painter, ag_int16 idx, ag_bool selected) = 0;
-    virtual void Event(AgListView& lv, AgEvent& event, ag_int16 idx) = 0;
-protected:
+    virtual ag_int16 CellCount() = 0;
+    virtual ag_int16 CellLength(AgListViewStyle style, ag_int16 idx) = 0;
+    virtual void DrawCell(AgPainter& painter, ag_int16 idx, ag_bool selected) = 0;
+    virtual void EventCell(AgEvent& event, ag_int16 idx) = 0;
+
+    NullablePtr<AgListView> ListView() const {
+        return list_view_;
+    }
+private:
     friend class AgListView;
     NullablePtr<AgListView> list_view_;
 };
@@ -42,6 +46,7 @@ public:
     ~AgListView() override;
 
     void SetModel(AgListModel* model);
+    NullablePtr<AgListModel> GetModel() const { return model_; }
     void SetDelegate(AgListViewDelegate* delegate);
     void NotifyItemChange(ag_int16 idx);
     void Update();
@@ -76,7 +81,7 @@ private:
     ag_int16 begin_idx_;         /* 最顶部的obj的idx */
     ag_int16 display_count_;     /* 显示的数量 */
     ag_int16 select_idx_;        /* 选中的obj的idx */
-    AgListViewStyle style_{ AgListViewStyle::eAgListViewStyle_Vertical };     /* 横向或者纵向 */
+    AgListViewStyle style_{ AgListViewStyle::kVertical };     /* 横向或者纵向 */
 };
 
 }
